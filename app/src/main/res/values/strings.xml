@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CalendarMemories</string>
+    <string name="tab_item_label_1">Daily</string>
+    <string name="tab_item_label_2">Monthly</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
