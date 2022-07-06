@@ -2,6 +2,7 @@ package com.example.calendarmemories;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class Time {
 
@@ -18,7 +19,7 @@ public class Time {
     }
 
     public static String toString(LocalDate today) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy LLLL d (EEEE)");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy LLLL d (EEEE)", Locale.ENGLISH);
         return today.format(dtf);
     }
 }
