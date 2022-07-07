@@ -11,6 +11,8 @@ import java.time.LocalDate;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,12 +136,18 @@ public class DailyFragment extends Fragment {
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
             Food food = dailyMemory.getFoodAt(i);
             // #TODO: Finish up creating a card for foods
-            MaterialCardView foodCard = new MaterialCardView();
+            //MaterialCardView foodCard = new MaterialCardView();
         }
     }
 
-    public ViewGroup.LayoutParams getCardLayoutParams() {
+    public MaterialCardView getMaterialCardView(Food food) {
         // #TODO: Card Layout params method
+        MaterialCardView card = new MaterialCardView(getContext());
+        ViewGroup.LayoutParams layoutParam = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        card.setLayoutParams(layoutParam);
+        return card;
     }
 
     public static void newFoodAdded(Food food) {
