@@ -4,31 +4,107 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/ThemeOverlay.CalendarMemories.FullscreenContainer"
     tools:context=".AddFragment">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/foodTextInput"
+        android:id="@+id/foodInputTextLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Food"
         app:layout_constraintTop_toTopOf="parent"
-        app:startIconDrawable="@drawable/ic_food_sign"
+        app:layout_constraintBottom_toTopOf="@+id/mealTypeInputLayout"
         android:layout_margin="15dp"
+        app:startIconDrawable="@drawable/ic_food_sign"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/foodTextInput"
-        android:layout_margin="15dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/foodInputText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/mealTypeInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        app:layout_constraintBottom_toTopOf="@id/withWhoInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/foodInputTextLayout">
+
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteMealType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/withWhoInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:hint="withWho"
+        app:layout_constraintTop_toBottomOf="@id/mealTypeInputLayout"
+        app:layout_constraintBottom_toTopOf="@id/sideNotesInputLayout"
+        app:startIconDrawable="@drawable/ic_people_sign"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/withWhoInputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/sideNotesInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Additional Notes"
+        android:layout_margin="15dp"
+        app:layout_constraintTop_toBottomOf="@id/withWhoInputLayout"
+        app:layout_constraintBottom_toTopOf="@id/buttonLinearContainer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/sideNotesInputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/buttonLinearContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sideNotesInputLayout">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/addConfirmBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:layout_weight="1"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/cancelBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_weight="1"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <!-- #TODO: Add other inputs and buttons -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

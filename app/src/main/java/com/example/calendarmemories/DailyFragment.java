@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
@@ -30,8 +31,9 @@ public class DailyFragment extends Fragment {
     private View v;
     private ConstraintLayout constraintLayout;
     private File currentFile = null;
-    private DailyMemory dailyMemory;
+    private static DailyMemory dailyMemory;
     private LinearLayout.LayoutParams layoutParams;
+    private static LinearLayout foodLinearLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,10 +75,15 @@ public class DailyFragment extends Fragment {
         floatingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AddFragment myAddFragment = new AddFragment();
+                myAddFragment.show(
+                        getChildFragmentManager(), AddFragment.TAG
+                );
                 // #TODO: Floating btn click response
             }
         });
         constraintLayout = v.findViewById(R.id.constraintLayout);
+        foodLinearLayout = v.findViewById(R.id.foodLinearLayout);
         return v;
     }
 
@@ -118,6 +125,24 @@ public class DailyFragment extends Fragment {
     }
 
     public void updatePanel() {
+        // #TODO: updatePanel
         // Remove all previous views in the panel
+        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
+            foodLinearLayout.removeViewAt(i);
+        }
+        // Add views in the panel
+        for (int i = 0; i < dailyMemory.getNumFood(); i++) {
+            Food food = dailyMemory.getFoodAt(i);
+            // #TODO: Finish up creating a card for foods
+            MaterialCardView foodCard = new MaterialCardView();
+        }
+    }
+
+    public ViewGroup.LayoutParams getCardLayoutParams() {
+        // #TODO: Card Layout params method
+    }
+
+    public static void newFoodAdded(Food food) {
+        dailyMemory.addFood(food);
     }
 }

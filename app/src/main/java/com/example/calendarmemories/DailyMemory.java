@@ -39,4 +39,20 @@ public class DailyMemory {
             // #TODO: Exception handling
         }
     }
+
+    public void addFood(Food f) {
+        foods.add(f);
+    }
+
+    public Food getFoodAt(int index) {
+        if (index >= foods.size()) {
+            return null;
+        } else {
+            return foods.get(index);
+        }
+    }
+
+    public int getNumFood() {
+        return foods.size();
+    }
 }
