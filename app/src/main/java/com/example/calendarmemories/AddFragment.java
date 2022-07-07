@@ -1,6 +1,8 @@
 package com.example.calendarmemories;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+
 import android.app.Dialog;
 import android.text.Editable;
 import android.view.View;
@@ -63,7 +65,8 @@ public class AddFragment extends DialogFragment {
                 String withWho = withWhoInputText.getText().toString();
                 String sideNotes = sideNotesInputText.getText().toString();
                 Food food = new Food(null, foodName, mealType, withWho, sideNotes);
-                DailyFragment.newFoodAdded(food);
+                System.out.println("*****Parent: " + getParentFragment());
+                ((DailyFragment) getParentFragment()).addFood(food);
                 dismiss();
             }
         });
