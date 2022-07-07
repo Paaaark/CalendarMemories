@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -28,11 +29,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -50,6 +55,11 @@ public class DailyFragment extends Fragment {
     private static DailyMemory dailyMemory;
     private LinearLayout.LayoutParams layoutParams;
     private static LinearLayout foodLinearLayout;
+
+    private static String userDataDir = "userData";
+    private String userID = "tempUser";
+    private static String foodDir = "foodData";
+
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -72,13 +82,9 @@ public class DailyFragment extends Fragment {
         layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        // #TODO: For debug only
-        dailyMemory = new DailyMemory();
-
+        // #TODO: Start panel
         date = Time.getTodaysDate();
-        updateDailyMemory();
-        updatePanelDebug();
-        //updatePanel();
+        getDailyMemory();
 
         dailyDateBtn = v.findViewById(R.id.dailyDateBtn);
         dailyDateBtn.setText(Time.toString(date));
@@ -120,6 +126,7 @@ public class DailyFragment extends Fragment {
         dailyDateBtn.setText(Time.toString(date));
     }
 
+    @Deprecated
     public void updateDailyMemory() {
         // If we already have a file open, write in the file and close the file
         if (currentFile != null) {
@@ -149,16 +156,18 @@ public class DailyFragment extends Fragment {
 
     public void updatePanel() {
         // #TODO: updatePanel
-        // #TODO: updatePanel causes the game to crash
+        // #TODO: updatePanel causes the app to crash
         // Remove all previous views in the panel
-        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
-            foodLinearLayout.removeViewAt(i);
-        }
+//        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
+//            foodLinearLayout.removeViewAt(i);
+//        }
         // Add views in the panel
+        System.out.println("Food size:" + dailyMemory.getNumFood());
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
             Food food = dailyMemory.getFoodAt(i);
+            MaterialCardView card = getMaterialCardView(food);
+            foodLinearLayout.addView(card);
             // #TODO: Finish up creating a card for foods
-            //MaterialCardView foodCard = new MaterialCardView();
         }
     }
 
@@ -167,6 +176,9 @@ public class DailyFragment extends Fragment {
     }
 
     public MaterialCardView getMaterialCardView(Food food) {
+        // #TODO: debug sout
+        System.out.println("foodID: " + food.getFoodID());
+
         // #TODO: Card Layout params method
         LinearLayout.LayoutParams layoutParamMPWC = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -208,6 +220,7 @@ public class DailyFragment extends Fragment {
             public void onClick(View view) {
                 System.out.println("Delete btn clicked");
                 foodLinearLayout.removeView(card);
+                deleteFoodFromDatabase(food);
             }
         });
 
@@ -238,37 +251,95 @@ public class DailyFragment extends Fragment {
         addFoodToDatabase(food);
     }
 
-    public void addFoodToDatabase(Food food) {
-        int numFood = dailyMemory.getNumFood();
-        db.collection("sampleData").document("user1")
-                .update("numFood", numFood)
+    public void deleteFoodFromDatabase(Food food) {
+        DocumentReference userDB = db.document(getDatabasePath());
+        Map<String, Object> dataToDelete = new HashMap<String, Object>();
+        dataToDelete.put(food.getFoodID(), FieldValue.delete());
+        userDB.update(dataToDelete)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
+                        // #TODO: Successful log
+                        System.out.println("Successfully deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // #TODO: Failure log
+                        System.out.println("Deletion failed");
+                        System.out.println(food.getFoodID());
+                    }
+                });
+    }
+
+    public void addFoodToDatabase(Food food) {
+        DocumentReference userDB = db.document(getDatabasePath());
+        HashMap<String, Object> updateNumFood = new HashMap<>();
+        updateNumFood.put("numFood", dailyMemory.getNumFood());
+        userDB.set(updateNumFood, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // #TODO: Successful log
                         System.out.println("Successfully logged");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        // #TODO: Failure log
                         System.out.println("Error logging");
                     }
                 });
         Map<String, Object> dataToAdd = new HashMap<String, Object>();
-        dataToAdd.put("Food" + numFood, food);
-        db.collection("sampleData").document("user1")
-                .set(dataToAdd, SetOptions.merge())
+        food.setFoodID(dailyMemory.generateFoodID());
+        dataToAdd.put(food.getFoodID(), food);
+        userDB.set(dataToAdd, SetOptions.merge())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
+                        // #TODO: Successful log
                         System.out.println("Successfully logged");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        // #TODO: Failure log
                         System.out.println("Error logging");
                     }
                 });
+    }
+
+    public String getDatabasePath() {
+        return joinPath(userDataDir, userID, foodDir, Time.getDayID(date));
+    }
+
+    public String joinPath(String ... dirs) {
+        String path = "";
+        for (int i = 0; i < dirs.length; i++) {
+            if (i != 0) path += "/";
+            path += dirs[i];
+        }
+        return path;
+    }
+
+    public void getDailyMemory() {
+        DocumentReference userDB = db.document(getDatabasePath());
+        userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    dailyMemory = new DailyMemory(document);
+                    updatePanel();
+
+                } else {
+                    // #TODO: Failed task response
+                    System.out.println("Task not successful");
+                }
+            }
+        });
     }
 }

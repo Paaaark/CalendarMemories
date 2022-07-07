@@ -22,4 +22,8 @@ public class Time {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy LLLL d (EEEE)", Locale.ENGLISH);
         return today.format(dtf);
     }
+
+    public static String getDayID(LocalDate today) {
+        return today.format(DateTimeFormatter.BASIC_ISO_DATE);
+    }
 }
