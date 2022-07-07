@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -79,9 +81,6 @@ public class DailyFragment extends Fragment {
         constraintLayout = v.findViewById(R.id.constraintLayout);
         foodLinearLayout = v.findViewById(R.id.foodLinearLayout);
 
-        layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-
         // #TODO: Start panel
         date = Time.getTodaysDate();
         getDailyMemory();
@@ -119,11 +118,13 @@ public class DailyFragment extends Fragment {
     public void goYesterday() {
         date = Time.getYesterday(date);
         dailyDateBtn.setText(Time.toString(date));
+        getDailyMemory();
     }
 
     public void goTomorrow() {
         date = Time.getTomorrow(date);
         dailyDateBtn.setText(Time.toString(date));
+        getDailyMemory();
     }
 
     @Deprecated
@@ -158,9 +159,9 @@ public class DailyFragment extends Fragment {
         // #TODO: updatePanel
         // #TODO: updatePanel causes the app to crash
         // Remove all previous views in the panel
-//        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
-//            foodLinearLayout.removeViewAt(i);
-//        }
+        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
+            foodLinearLayout.removeViewAt(i);
+        }
         // Add views in the panel
         System.out.println("Food size:" + dailyMemory.getNumFood());
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
@@ -176,10 +177,6 @@ public class DailyFragment extends Fragment {
     }
 
     public MaterialCardView getMaterialCardView(Food food) {
-        // #TODO: debug sout
-        System.out.println("foodID: " + food.getFoodID());
-
-        // #TODO: Card Layout params method
         LinearLayout.LayoutParams layoutParamMPWC = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -275,39 +272,23 @@ public class DailyFragment extends Fragment {
 
     public void addFoodToDatabase(Food food) {
         DocumentReference userDB = db.document(getDatabasePath());
-        HashMap<String, Object> updateNumFood = new HashMap<>();
-        updateNumFood.put("numFood", dailyMemory.getNumFood());
-        userDB.set(updateNumFood, SetOptions.merge())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        // #TODO: Successful log
-                        System.out.println("Successfully logged");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // #TODO: Failure log
-                        System.out.println("Error logging");
-                    }
-                });
         Map<String, Object> dataToAdd = new HashMap<String, Object>();
         food.setFoodID(dailyMemory.generateFoodID());
+        dataToAdd.put(DailyMemory.NUM_FOOD_KEY, dailyMemory.getNumFood());
         dataToAdd.put(food.getFoodID(), food);
         userDB.set(dataToAdd, SetOptions.merge())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // #TODO: Successful log
-                        System.out.println("Successfully logged");
+                        Snackbar.make(foodLinearLayout, R.string.food_add_success_msg,
+                                Snackbar.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // #TODO: Failure log
-                        System.out.println("Error logging");
+                        Snackbar.make(foodLinearLayout, R.string.food_add_failed_msg,
+                                Snackbar.LENGTH_LONG).show();
                     }
                 });
     }
@@ -334,7 +315,6 @@ public class DailyFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     dailyMemory = new DailyMemory(document);
                     updatePanel();
-
                 } else {
                     // #TODO: Failed task response
                     System.out.println("Task not successful");

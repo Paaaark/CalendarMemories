@@ -15,12 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DailyMemory {
+
+    public static final String NUM_FOOD_KEY = "numFood";
+
     private ArrayList<Food> foods;
-    private int idTemplate;
+    private long idTemplate;
 
     public DailyMemory() {
         foods = new ArrayList<Food>();
-        idTemplate = 1;
+        idTemplate = 1l;
     }
 
     public DailyMemory(DocumentSnapshot document) {
@@ -28,7 +31,7 @@ public class DailyMemory {
         if (document.exists()) {
             Map<String, Object> data = document.getData();
             for (String key : data.keySet()) {
-                if (!key.equals("numFood")) {
+                if (!key.equals(NUM_FOOD_KEY)) {
                     foods.add(new Food((HashMap<String, Object>) data.get(key)));
                 }
             }
@@ -36,8 +39,10 @@ public class DailyMemory {
             // #TODO: Document not found response
             System.out.println("Document does not exist");
         }
+        idTemplate = foods.size();
     }
 
+    @Deprecated
     public DailyMemory(ObjectInputStream objIn) {
         foods = new ArrayList<Food>();
         int numObjs = 0;
@@ -83,6 +88,6 @@ public class DailyMemory {
     }
 
     public String generateFoodID() {
-        return "Food" + Integer.toString(idTemplate++);
+        return "Food" + Long.toString(idTemplate++);
     }
 }

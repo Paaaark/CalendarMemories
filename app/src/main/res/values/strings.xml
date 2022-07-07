@@ -13,4 +13,6 @@
         <item>Dinner</item>
         <item>Snack</item>
     </string-array>
+    <string name="food_add_success_msg">Food successfully added!</string>
+    <string name="food_add_failed_msg">Failed to add. Please try again.</string>
 </resources>
