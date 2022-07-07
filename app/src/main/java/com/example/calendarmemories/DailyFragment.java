@@ -10,21 +10,31 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +50,8 @@ public class DailyFragment extends Fragment {
     private static DailyMemory dailyMemory;
     private LinearLayout.LayoutParams layoutParams;
     private static LinearLayout foodLinearLayout;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -159,8 +171,8 @@ public class DailyFragment extends Fragment {
         LinearLayout.LayoutParams layoutParamMPWC = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams layoutParamWCWC = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams layoutParam0dpWC = new LinearLayout.LayoutParams(
+                0,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         MaterialCardView card = new MaterialCardView(getContext());
@@ -168,22 +180,36 @@ public class DailyFragment extends Fragment {
         LinearLayout cardSubLL = new LinearLayout(getContext());
         cardSubLL.setLayoutParams(layoutParamMPWC);
         cardSubLL.setOrientation(LinearLayout.HORIZONTAL);
+        cardSubLL.setGravity(Gravity.CENTER_VERTICAL);
 
         // Creates an imageview holder
-        layoutParamWCWC.weight = 0.1f;
+        layoutParam0dpWC.weight = 1f;
         ImageView foodImg = new ImageView(getContext());
-        foodImg.setLayoutParams(layoutParamWCWC);
+        foodImg.setLayoutParams(layoutParam0dpWC);
         foodImg.setImageResource(R.drawable.ic_food_sign);
 
         // Creates a subsub layout and add textViews to it
-        layoutParamWCWC.weight = 0.9f;
+        layoutParam0dpWC.weight = 15f;
         LinearLayout subsubLL = new LinearLayout(getContext());
-        subsubLL.setLayoutParams(layoutParamWCWC);
+        subsubLL.setLayoutParams(layoutParam0dpWC);
         subsubLL.setOrientation(LinearLayout.VERTICAL);
-        TextView foodNameText = getTextView(getContext(), layoutParamWCWC, food.getFoodName());
-        TextView mealTypeText = getTextView(getContext(), layoutParamWCWC, food.getMealType());
-        TextView withWhoText = getTextView(getContext(), layoutParamWCWC, food.getWithWho());
-        TextView sideNotesText = getTextView(getContext(), layoutParamWCWC, food.getSideNotes());
+        TextView foodNameText = getTextView(getContext(), layoutParamMPWC, food.getFoodName());
+        TextView mealTypeText = getTextView(getContext(), layoutParamMPWC, food.getMealType());
+        TextView withWhoText = getTextView(getContext(), layoutParamMPWC, food.getWithWho());
+        TextView sideNotesText = getTextView(getContext(), layoutParamMPWC, food.getSideNotes());
+
+        // Create a deletebtn
+        layoutParam0dpWC.weight = 1f;
+        ImageButton deleteBtn = new ImageButton(getContext());
+        deleteBtn.setLayoutParams(layoutParam0dpWC);
+        deleteBtn.setImageResource(R.drawable.ic_delete_icon);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Delete btn clicked");
+                foodLinearLayout.removeView(card);
+            }
+        });
 
         subsubLL.addView(foodNameText);
         subsubLL.addView(mealTypeText);
@@ -192,6 +218,7 @@ public class DailyFragment extends Fragment {
 
         cardSubLL.addView(foodImg);
         cardSubLL.addView(subsubLL);
+        cardSubLL.addView(deleteBtn);
 
         card.addView(cardSubLL);
 
@@ -208,10 +235,40 @@ public class DailyFragment extends Fragment {
     public void addFood(Food food) {
         dailyMemory.addFood(food);
         foodLinearLayout.addView(getMaterialCardView(food));
+        addFoodToDatabase(food);
     }
 
-    public void dummy() {
-        System.out.println("Dummy method invoked");
-        return;
+    public void addFoodToDatabase(Food food) {
+        int numFood = dailyMemory.getNumFood();
+        db.collection("sampleData").document("user1")
+                .update("numFood", numFood)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        System.out.println("Successfully logged");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        System.out.println("Error logging");
+                    }
+                });
+        Map<String, Object> dataToAdd = new HashMap<String, Object>();
+        dataToAdd.put("Food" + numFood, food);
+        db.collection("sampleData").document("user1")
+                .set(dataToAdd, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        System.out.println("Successfully logged");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        System.out.println("Error logging");
+                    }
+                });
     }
 }

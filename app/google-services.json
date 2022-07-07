@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "581746933837",
+    "project_id": "calendarmemories-64faa",
+    "storage_bucket": "calendarmemories-64faa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581746933837:android:a7cd3562942e777e60dc04",
+        "android_client_info": {
+          "package_name": "com.example.calendarmemories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581746933837-82m16if0ktu9r1ki5edp2anlt4nicvte.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNiz7YUCHH0flxkP_kXzVP7KVC9o8y234"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581746933837-82m16if0ktu9r1ki5edp2anlt4nicvte.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
