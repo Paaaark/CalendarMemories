@@ -1,6 +1,7 @@
 package com.example.calendarmemories;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Bundle;
 
@@ -20,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.divider.MaterialDivider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
@@ -47,6 +50,14 @@ import com.google.firebase.firestore.SetOptions;
  * A simple {@link Fragment} subclass.
  */
 public class DailyFragment extends Fragment {
+
+    private static float FOOD_NAME_TEXT_SIZE = 18f;
+    private static float MEAL_TYPE_TEXT_SIZE = 10f;
+    private static float FOOD_IMAGE_WEIGHT = 1f;
+    private static float FOOD_TEXT_WEIGHT = 15f;
+    private static float FOOD_BTN_WEIGHT = 0f;
+    private static int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
+    private static int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
 
     private Button dailyDateBtn, leftDateBtn, rightDateBtn;
     private Button listViewToggleBtn, galleryViewToggleBtn;
@@ -62,7 +73,6 @@ public class DailyFragment extends Fragment {
     private static String userDataDir = "userData";
     private String userID = "tempUser";
     private static String foodDir = "foodData";
-
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -186,8 +196,7 @@ public class DailyFragment extends Fragment {
         System.out.println("Food size:" + dailyMemory.getNumFood());
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
             Food food = dailyMemory.getFoodAt(i);
-            MaterialCardView card = getMaterialCardView(food);
-            foodLinearLayout.addView(card);
+            foodLinearLayout.addView(getCardListView(food));
             // #TODO: Finish up creating a card for foods
         }
     }
@@ -196,7 +205,12 @@ public class DailyFragment extends Fragment {
         System.out.println("MyDebug" + foodLinearLayout.getChildCount());
     }
 
-    public MaterialCardView getMaterialCardView(Food food) {
+    @Deprecated
+    public LinearLayout getCardListViewDeprecated(Food food) {
+        LinearLayout container = new LinearLayout(getContext());
+        container.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
+        container.setOrientation(LinearLayout.VERTICAL);
+
         LinearLayout.LayoutParams layoutParamMPWC = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -205,41 +219,59 @@ public class DailyFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         MaterialCardView card = new MaterialCardView(getContext());
-        card.setLayoutParams(layoutParamMPWC);
+        card.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
         LinearLayout cardSubLL = new LinearLayout(getContext());
-        cardSubLL.setLayoutParams(layoutParamMPWC);
+        cardSubLL.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
         cardSubLL.setOrientation(LinearLayout.HORIZONTAL);
         cardSubLL.setGravity(Gravity.CENTER_VERTICAL);
 
         // Creates an imageview holder
-        layoutParam0dpWC.weight = 1f;
+        layoutParam0dpWC.weight = FOOD_IMAGE_WEIGHT;
         ImageView foodImg = new ImageView(getContext());
-        foodImg.setLayoutParams(layoutParam0dpWC);
+        foodImg.setLayoutParams(getLayoutParams(0, WRAP_CONTENT, FOOD_IMAGE_WEIGHT));
         foodImg.setImageResource(R.drawable.ic_food_sign);
 
         // Creates a subsub layout and add textViews to it
-        layoutParam0dpWC.weight = 15f;
         LinearLayout subsubLL = new LinearLayout(getContext());
-        subsubLL.setLayoutParams(layoutParam0dpWC);
+        subsubLL.setLayoutParams(getLayoutParams(0, WRAP_CONTENT, FOOD_TEXT_WEIGHT));
         subsubLL.setOrientation(LinearLayout.VERTICAL);
         TextView foodNameText = getTextView(getContext(), layoutParamMPWC, food.getFoodName());
+        foodNameText.setTypeface(Typeface.DEFAULT_BOLD);
+        foodNameText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, FOOD_NAME_TEXT_SIZE);
         TextView mealTypeText = getTextView(getContext(), layoutParamMPWC, food.getMealType());
+        mealTypeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, MEAL_TYPE_TEXT_SIZE);
         TextView withWhoText = getTextView(getContext(), layoutParamMPWC, food.getWithWho());
         TextView sideNotesText = getTextView(getContext(), layoutParamMPWC, food.getSideNotes());
 
         // Create a deletebtn
         layoutParam0dpWC.weight = 1f;
-        ImageButton deleteBtn = new ImageButton(getContext());
-        deleteBtn.setLayoutParams(layoutParam0dpWC);
-        deleteBtn.setImageResource(R.drawable.ic_delete_icon);
+        LinearLayout btnLL = new LinearLayout(getContext());
+        btnLL.setLayoutParams(getLayoutParams(WRAP_CONTENT, WRAP_CONTENT, 0));
+        btnLL.setOrientation(LinearLayout.VERTICAL);
+        Button deleteBtn = (Button) getLayoutInflater().inflate(R.layout.custom_button_layout, null);
+        deleteBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete_icon, 0, 0, 0);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("Delete btn clicked");
-                foodLinearLayout.removeView(card);
+                foodLinearLayout.removeView(container);
                 deleteFoodFromDatabase(food);
             }
         });
+        Button editBtn = (Button) getLayoutInflater().inflate(R.layout.custom_button_layout, null);
+        editBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_edit_icon, 0, 0, 0);
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // #TODO: Edit btn click response
+            }
+        });
+
+        MaterialDivider materialDivider = new MaterialDivider(getContext());
+        materialDivider.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
+
+        btnLL.addView(editBtn);
+        btnLL.addView(deleteBtn);
 
         subsubLL.addView(foodNameText);
         subsubLL.addView(mealTypeText);
@@ -248,11 +280,44 @@ public class DailyFragment extends Fragment {
 
         cardSubLL.addView(foodImg);
         cardSubLL.addView(subsubLL);
-        cardSubLL.addView(deleteBtn);
+        cardSubLL.addView(btnLL);
 
         card.addView(cardSubLL);
 
-        return card;
+        container.addView(card);
+        container.addView(materialDivider);
+
+        return container;
+    }
+
+    public LinearLayout getCardListView(Food food) {
+        LinearLayout container = (LinearLayout) getLayoutInflater().inflate(R.layout.list_view_test, null);
+        ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
+        ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
+        ((TextView) container.findViewById(R.id.listCardWithWhoTxt)).setText(food.getWithWho());
+        ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
+        Button deleteBtn = container.findViewById(R.id.listCardDeleteBtn);
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                foodLinearLayout.removeView(container);
+                deleteFoodFromDatabase(food);
+            }
+        });
+        Button editBtn = container.findViewById(R.id.listCardEditBtn);
+        editBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // #TODO: Edit btn action
+            }
+        });
+        return container;
+    }
+
+    private LinearLayout.LayoutParams getLayoutParams(int width, int height, float weight) {
+        LinearLayout.LayoutParams result = new LinearLayout.LayoutParams(width, height);
+        result.weight = weight;
+        return result;
     }
 
     public TextView getTextView(Context context, ViewGroup.LayoutParams layoutParams, String text) {
@@ -264,7 +329,7 @@ public class DailyFragment extends Fragment {
 
     public void addFood(Food food) {
         dailyMemory.addFood(food);
-        foodLinearLayout.addView(getMaterialCardView(food));
+        foodLinearLayout.addView(getCardListView(food));
         addFoodToDatabase(food);
     }
 

@@ -95,6 +95,7 @@
                         android:backgroundTint="@drawable/toggle_button_custom"/>
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </androidx.constraintlayout.widget.ConstraintLayout>
+<!-- Gallery view style test -->
 <!--            <LinearLayout-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="wrap_content"-->
