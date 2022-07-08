@@ -49,6 +49,7 @@ import com.google.firebase.firestore.SetOptions;
 public class DailyFragment extends Fragment {
 
     private Button dailyDateBtn, leftDateBtn, rightDateBtn;
+    private Button listViewToggleBtn, galleryViewToggleBtn;
     private FloatingActionButton floatingBtn;
     private LocalDate date;
     private View v;
@@ -110,6 +111,25 @@ public class DailyFragment extends Fragment {
                         getChildFragmentManager(), AddFragment.TAG
                 );
                 // #TODO: Floating btn click response
+            }
+        });
+        listViewToggleBtn = v.findViewById(R.id.listViewToggleBtn);
+        listViewToggleBtn.setSelected(true);
+        galleryViewToggleBtn = v.findViewById(R.id.galleryViewToggleBtn);
+        galleryViewToggleBtn.setSelected(false);
+        listViewToggleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listViewToggleBtn.setSelected(true);
+                galleryViewToggleBtn.setSelected(false);
+                // #TODO: View toggle
+            }
+        });
+        galleryViewToggleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listViewToggleBtn.setSelected(false);
+                galleryViewToggleBtn.setSelected(true);
             }
         });
         return v;
