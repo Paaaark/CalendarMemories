@@ -1,6 +1,7 @@
 package com.example.calendarmemories;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.media.Image;
 import android.os.Bundle;
@@ -10,22 +11,29 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import android.net.Uri;
+
+import java.net.URI;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,6 +45,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.divider.MaterialDivider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,6 +55,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,6 +69,7 @@ public class DailyFragment extends Fragment {
     private static float FOOD_BTN_WEIGHT = 0f;
     private static int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
     private static int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
+    private static String DATE_PICKER_TITLE = "select date";
 
     private Button dailyDateBtn, leftDateBtn, rightDateBtn;
     private Button listViewToggleBtn, galleryViewToggleBtn;
@@ -98,6 +110,29 @@ public class DailyFragment extends Fragment {
 
         dailyDateBtn = v.findViewById(R.id.dailyDateBtn);
         dailyDateBtn.setText(Time.toString(date));
+        dailyDateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MaterialDatePicker picker = MaterialDatePicker.Builder.datePicker()
+                        .setTitleText(DATE_PICKER_TITLE)
+                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build();
+                // #TODO: Remove programmed string
+                picker.show(getChildFragmentManager(), "Tag");
+                picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+                        @Override
+                        public void onPositiveButtonClick(Object selection) {
+                            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+                            calendar.setTimeInMillis((Long) selection);
+                            LocalDate newDate = LocalDate.of(calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH) + 1,
+                                    calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                            setDayTo(newDate);
+                        }
+                    }
+                );
+            }
+        });
         leftDateBtn = v.findViewById(R.id.leftDateBtn);
         leftDateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +178,12 @@ public class DailyFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    public void setDayTo(LocalDate day) {
+        date = day;
+        dailyDateBtn.setText(Time.toString(date));
+        getDailyMemory();
     }
 
     public void goYesterday() {
@@ -292,6 +333,7 @@ public class DailyFragment extends Fragment {
 
     public LinearLayout getCardListView(Food food) {
         LinearLayout container = (LinearLayout) getLayoutInflater().inflate(R.layout.list_view_test, null);
+        ImageView imgView = container.findViewById(R.id.listCardImageContainer);
         ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
         ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
         ((TextView) container.findViewById(R.id.listCardWithWhoTxt)).setText(food.getWithWho());
@@ -311,6 +353,25 @@ public class DailyFragment extends Fragment {
                 // #TODO: Edit btn action
             }
         });
+
+        ViewTreeObserver viewTreeObserver = imgView.getViewTreeObserver();
+        viewTreeObserver
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (food.getImageFilePath() != null) {
+                            System.out.println("Debug trying to get file at " + food.getImageFilePath());
+                            File file = new File(getContext().getFilesDir(), food.getImageFilePath());
+                            System.out.println("Does file exists? " + file.exists());
+                            Picasso.get().load(file)
+                                    .resize(imgView.getWidth(), imgView.getWidth())
+                                    .centerCrop()
+                                    .into(imgView);
+                        }
+                        imgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                });
+
         return container;
     }
 
@@ -328,7 +389,27 @@ public class DailyFragment extends Fragment {
     }
 
     public void addFood(Food food) {
+        food.setFoodID(dailyMemory.generateFoodID());
         dailyMemory.addFood(food);
+
+        // #TODO: Later integrate this to DailyMemory object
+        String filePath = date.toString() + food.getFoodID();
+        food.setImageFilePath(filePath);
+        System.out.println("Debug ImgFilePath saved to: " + food.getImageFilePath());
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), food.getImageUri());
+        } catch (Exception e) {
+            //#TODO: File not found exception
+            System.out.println("Debug bitMap failed to load");
+        }
+        try (FileOutputStream fos = getContext().openFileOutput(filePath, Context.MODE_PRIVATE)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            // #TODO: File out exception
+            System.out.println("Debug file cannot be written");
+        }
+
         foodLinearLayout.addView(getCardListView(food));
         addFoodToDatabase(food);
     }
@@ -358,7 +439,6 @@ public class DailyFragment extends Fragment {
     public void addFoodToDatabase(Food food) {
         DocumentReference userDB = db.document(getDatabasePath());
         Map<String, Object> dataToAdd = new HashMap<String, Object>();
-        food.setFoodID(dailyMemory.generateFoodID());
         dataToAdd.put(DailyMemory.NUM_FOOD_KEY, dailyMemory.getNumFood());
         dataToAdd.put(food.getFoodID(), food);
         userDB.set(dataToAdd, SetOptions.merge())

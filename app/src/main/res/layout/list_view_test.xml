@@ -21,9 +21,9 @@
                     android:id="@+id/listCardImageContainer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.2"
+                    android:layout_weight="0.35"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_people_sign"/>
+                    android:src="@drawable/ic_food_sign"/>
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
