@@ -1,5 +1,6 @@
 package com.example.calendarmemories;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -28,6 +29,8 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -57,6 +60,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -69,7 +74,8 @@ public class DailyFragment extends Fragment {
     private static float FOOD_BTN_WEIGHT = 0f;
     private static int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
     private static int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
-    private static String DATE_PICKER_TITLE = "select date";
+    private static final String DATE_PICKER_TITLE = "select date";
+    public static final String WITH_WHO_TEXT_PREFIX = "Ate with: ";
 
     private Button dailyDateBtn, leftDateBtn, rightDateBtn;
     private Button listViewToggleBtn, galleryViewToggleBtn;
@@ -177,6 +183,7 @@ public class DailyFragment extends Fragment {
                 galleryViewToggleBtn.setSelected(true);
             }
         });
+
         return v;
     }
 
@@ -227,7 +234,6 @@ public class DailyFragment extends Fragment {
     }
 
     public void updatePanel() {
-        // #TODO: updatePanel
         // #TODO: updatePanel causes the app to crash
         // Remove all previous views in the panel
         for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
@@ -242,6 +248,7 @@ public class DailyFragment extends Fragment {
         }
     }
 
+    @Deprecated
     public void updatePanelDebug() {
         System.out.println("MyDebug" + foodLinearLayout.getChildCount());
     }
@@ -334,9 +341,11 @@ public class DailyFragment extends Fragment {
     public LinearLayout getCardListView(Food food) {
         LinearLayout container = (LinearLayout) getLayoutInflater().inflate(R.layout.list_view_test, null);
         ImageView imgView = container.findViewById(R.id.listCardImageContainer);
+
         ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
         ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
-        ((TextView) container.findViewById(R.id.listCardWithWhoTxt)).setText(food.getWithWho());
+        setTextWithPrefix(container.findViewById(R.id.listCardWithWhoTxt), WITH_WHO_TEXT_PREFIX,
+                food.getWithWho());
         ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
         Button deleteBtn = container.findViewById(R.id.listCardDeleteBtn);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -351,6 +360,10 @@ public class DailyFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // #TODO: Edit btn action
+                AddFragment myAddFragment = new AddFragment(food, container);
+                myAddFragment.show(
+                        getChildFragmentManager(), AddFragment.TAG
+                );
             }
         });
 
@@ -396,22 +409,29 @@ public class DailyFragment extends Fragment {
         String filePath = date.toString() + food.getFoodID();
         food.setImageFilePath(filePath);
         System.out.println("Debug ImgFilePath saved to: " + food.getImageFilePath());
+        saveFoodImg(getContext(), filePath, food.getImageUri());
+
+        foodLinearLayout.addView(getCardListView(food));
+        addFoodToDatabase(food);
+    }
+
+    public static void saveFoodImg(Context context, String filePath, Uri imageUri) {
         Bitmap bitmap = null;
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), food.getImageUri());
+            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
         } catch (Exception e) {
-            //#TODO: File not found exception
-            System.out.println("Debug bitMap failed to load");
+            // #TODO: File not found exception
         }
-        try (FileOutputStream fos = getContext().openFileOutput(filePath, Context.MODE_PRIVATE)) {
+        try (FileOutputStream fos = context.openFileOutput(filePath, Context.MODE_PRIVATE)) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
         } catch (Exception e) {
             // #TODO: File out exception
             System.out.println("Debug file cannot be written");
         }
+    }
 
-        foodLinearLayout.addView(getCardListView(food));
-        addFoodToDatabase(food);
+    public static void setTextWithPrefix(TextView textView, String prefix, String suffix) {
+        textView.setText(prefix + suffix);
     }
 
     public void deleteFoodFromDatabase(Food food) {
@@ -453,6 +473,27 @@ public class DailyFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Snackbar.make(foodLinearLayout, R.string.food_add_failed_msg,
+                                Snackbar.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+    public void updateFoodToDatabase(Food food) {
+        DocumentReference userDB = db.document(getDatabasePath());
+        Map<String, Object> dataToModify = new HashMap<String, Object>();
+        dataToModify.put(food.getFoodID(), food);
+        userDB.update(dataToModify)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Snackbar.make(foodLinearLayout, "Entry successfully modified!",
+                                Snackbar.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar.make(foodLinearLayout, "Filaed to modify. Please try again",
                                 Snackbar.LENGTH_LONG).show();
                     }
                 });

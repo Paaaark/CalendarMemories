@@ -15,15 +15,19 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.calendarmemories.databinding.FragmentAddBinding;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +43,23 @@ public class AddFragment extends DialogFragment {
     private AutoCompleteTextView mealTypeInput;
     private ImageView foodImgView;
     private Uri imgUri = null;
+    private boolean editingFood = false;
+    private LinearLayout container;
+    private Food food;
+    private boolean imgViewFlag = true;
 
     public static String TAG = "AddDialogFragment";
     private static final String IMAGE_PICKER_TITLE = "Select an image";
 
     public AddFragment() {
         super(R.layout.fragment_add);
+    }
+
+    public AddFragment(Food food, LinearLayout container) {
+        super(R.layout.fragment_add);
+        this.food = food;
+        this.container = container;
+        editingFood = true;
     }
 
     @Override
@@ -71,19 +86,60 @@ public class AddFragment extends DialogFragment {
         foodImgView = getView().findViewById(R.id.foodImgView);
         foodImgView.setColorFilter(R.color.minimal_pink_light);
 
+        // If we are in editing mode, initialize the texts into the textViews
+        if (editingFood) {
+            ViewTreeObserver viewTreeObserver = foodImgView.getViewTreeObserver();
+            viewTreeObserver
+                    .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            if (food.getImageFilePath() != null && imgViewFlag) {
+                                putImageInView(food.getImageFilePath(), foodImgView.getWidth(),
+                                        getImageHeight(foodImgView.getHeight()), foodImgView);
+                                imgViewFlag = false;
+                            }
+                            foodImgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    });
+            foodInputText.setText(food.getFoodName());
+            withWhoInputText.setText(food.getWithWho());
+            sideNotesInputText.setText(food.getSideNotes());
+            mealTypeInput.setText(food.getMealType());
+        }
+
         // #TODO: Add button actions
         addConfirmBtn = getView().findViewById(R.id.addConfirmBtn);
         addConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String foodName = foodInputText.getText().toString();
-                String mealType = mealTypeInput.getText().toString();
-                String withWho = withWhoInputText.getText().toString();
-                String sideNotes = sideNotesInputText.getText().toString();
-                Food food = new Food(imgUri, foodName, mealType, withWho, sideNotes);
-                System.out.println("*****Parent: " + getParentFragment());
-                ((DailyFragment) getParentFragment()).addFood(food);
-                dismiss();
+                // Adding a new entry of food
+                if (!editingFood) {
+                    String foodName = foodInputText.getText().toString();
+                    String mealType = mealTypeInput.getText().toString();
+                    String withWho = withWhoInputText.getText().toString();
+                    String sideNotes = sideNotesInputText.getText().toString();
+                    Food food = new Food(imgUri, foodName, mealType, withWho, sideNotes);
+                    System.out.println("*****Parent: " + getParentFragment());
+                    ((DailyFragment) getParentFragment()).addFood(food);
+                } else {
+                    // Modifying an existing entry
+                    food.setImageUri(imgUri);
+                    DailyFragment.saveFoodImg(getContext(), food.getImageFilePath(), food.getImageUri());
+                    food.setFoodName(foodInputText.getText().toString());
+                    food.setMealType(mealTypeInput.getText().toString());
+                    food.setWithWho(withWhoInputText.getText().toString());
+                    food.setSideNotes(sideNotesInputText.getText().toString());
+                    ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
+                    ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
+                    DailyFragment.setTextWithPrefix(container.findViewById(R.id.listCardWithWhoTxt),
+                            DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
+                    ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
+                    ImageView imageView = container.findViewById(R.id.listCardImageContainer);
+                    putImageInView(food.getImageUri(), imageView.getWidth(), imageView.getHeight(),
+                            imageView);
+                    ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
+                }
+                dismiss();;
             }
         });
         // When cancelBtn is clicked, dismiss the dialog
@@ -97,6 +153,12 @@ public class AddFragment extends DialogFragment {
         // #TODO: addImgBtn logic
         addImgBtn = getView().findViewById(R.id.addImgBtn);
         addImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                imageChooser();
+            }
+        });
+        foodImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 imageChooser();
@@ -132,5 +194,20 @@ public class AddFragment extends DialogFragment {
 
     private int getImageHeight(int width) {
         return (int) (width * 9.0 / 16.0);
+    }
+
+    private void putImageInView(String imageFilePath, int width, int height, ImageView view) {
+        File file = new File(getContext().getFilesDir(), imageFilePath);
+        Picasso.get().load(file)
+                .resize(width, height)
+                .centerCrop()
+                .into(view);
+    }
+
+    private void putImageInView(Uri imageUri, int width, int height, ImageView view) {
+        Picasso.get().load(imageUri)
+                .resize(width, height)
+                .centerCrop()
+                .into(view);
     }
 }
