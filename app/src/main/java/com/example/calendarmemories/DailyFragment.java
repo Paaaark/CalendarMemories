@@ -1,18 +1,23 @@
 package com.example.calendarmemories;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import android.net.Uri;
 
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -21,8 +26,10 @@ import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -64,6 +71,7 @@ public class DailyFragment extends Fragment {
     private static final float FOOD_TEXT_WEIGHT = 15f;
     private static final int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
     private static final int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
+    private static final String IMAGE_MIME_TYPE = "image/png";
     private static final String DATE_PICKER_TITLE = "select date";
     public static final String WITH_WHO_TEXT_PREFIX = "Ate with: ";
 
@@ -374,10 +382,8 @@ public class DailyFragment extends Fragment {
                     @Override
                     public void onGlobalLayout() {
                         if (food.getImageFilePath() != null) {
-                            System.out.println("Debug trying to get file at " + food.getImageFilePath());
-                            File file = new File(getContext().getFilesDir(), food.getImageFilePath());
-                            System.out.println("Does file exists? " + file.exists());
-                            Picasso.get().load(file)
+                            Uri imageUri = Uri.parse(food.getImageFilePath());
+                            Picasso.get().load(imageUri)
                                     .resize(imgView.getWidth(), imgView.getWidth())
                                     .centerCrop()
                                     .into(imgView);
@@ -406,29 +412,8 @@ public class DailyFragment extends Fragment {
         food.setFoodID(dailyMemory.generateFoodID());
         dailyMemory.addFood(food);
 
-        // #TODO: Later integrate this to DailyMemory object
-        String filePath = date.toString() + food.getFoodID();
-        food.setImageFilePath(filePath);
-        System.out.println("Debug ImgFilePath saved to: " + food.getImageFilePath());
-        saveFoodImg(getContext(), filePath, food.getImageUri());
-
         foodLinearLayout.addView(getCardListView(food));
         addFoodToDatabase(food);
-    }
-
-    public static void saveFoodImg(Context context, String filePath, Uri imageUri) {
-        Bitmap bitmap = null;
-        try {
-            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
-        } catch (Exception e) {
-            // #TODO: File not found exception
-        }
-        try (FileOutputStream fos = context.openFileOutput(filePath, Context.MODE_PRIVATE)) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        } catch (Exception e) {
-            // #TODO: File out exception
-            System.out.println("Debug file cannot be written");
-        }
     }
 
     public static void setTextWithPrefix(TextView textView, String prefix, String suffix) {

@@ -131,13 +131,12 @@ public class AddFragment extends DialogFragment {
                     String mealType = mealTypeInput.getText().toString();
                     String withWho = withWhoInputText.getText().toString();
                     String sideNotes = sideNotesInputText.getText().toString();
-                    Food food = new Food(imgUri, foodName, mealType, withWho, sideNotes);
+                    Food food = new Food(imgUri.toString(), foodName, mealType, withWho, sideNotes);
                     System.out.println("*****Parent: " + getParentFragment());
                     ((DailyFragment) getParentFragment()).addFood(food);
                 } else {
                     // Modifying an existing entry
-                    food.setImageUri(imgUri);
-                    DailyFragment.saveFoodImg(getContext(), food.getImageFilePath(), food.getImageUri());
+                    food.setImageFilePath(imgUri.toString());
                     food.setFoodName(foodInputText.getText().toString());
                     food.setMealType(mealTypeInput.getText().toString());
                     food.setWithWho(withWhoInputText.getText().toString());
@@ -148,7 +147,7 @@ public class AddFragment extends DialogFragment {
                             DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
                     ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
                     ImageView imageView = container.findViewById(R.id.listCardImageContainer);
-                    putImageInView(food.getImageUri(), imageView.getWidth(), imageView.getHeight(),
+                    putImageInView(food.getImageFilePath(), imageView.getWidth(), imageView.getHeight(),
                             imageView);
                     ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
                 }
@@ -193,6 +192,7 @@ public class AddFragment extends DialogFragment {
                     Intent data = result.getData();
                     if (data != null && data.getData() != null) {
                         Uri selectedImageUri = data.getData();
+                        System.out.println("Selected img uri path: " + selectedImageUri.getPath());
                         int width = foodImgView.getWidth();
                         Picasso.get().load(selectedImageUri)
                                 .resize(width, getImageHeight(width))
@@ -210,8 +210,8 @@ public class AddFragment extends DialogFragment {
     }
 
     private void putImageInView(String imageFilePath, int width, int height, ImageView view) {
-        File file = new File(getContext().getFilesDir(), imageFilePath);
-        Picasso.get().load(file)
+        Uri imageUri = Uri.parse(imageFilePath);
+        Picasso.get().load(imageUri)
                 .resize(width, height)
                 .centerCrop()
                 .into(view);
