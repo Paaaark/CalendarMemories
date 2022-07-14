@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.calendarmemories.databinding.FragmentAddBinding;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
@@ -40,6 +41,7 @@ public class AddFragment extends DialogFragment {
 
     private Button addConfirmBtn, cancelBtn, addImgBtn;
     private TextInputEditText foodInputText, withWhoInputText, sideNotesInputText;
+    private CircularProgressIndicator circularProgressIndicator;
     private AutoCompleteTextView mealTypeInput;
     private ImageView foodImgView;
     private Uri imgUri = null;
@@ -84,7 +86,7 @@ public class AddFragment extends DialogFragment {
         sideNotesInputText = getView().findViewById(R.id.sideNotesInputText);
         mealTypeInput = getView().findViewById(R.id.autoCompleteMealType);
         foodImgView = getView().findViewById(R.id.foodImgView);
-        foodImgView.setColorFilter(R.color.minimal_pink_light);
+        circularProgressIndicator = getView().findViewById(R.id.circularProgressIndicator);
 
         // If we are in editing mode, initialize the texts into the textViews
         if (editingFood) {
@@ -112,6 +114,17 @@ public class AddFragment extends DialogFragment {
         addConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                circularProgressIndicator.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // #TODO: CircularProgressIndicator not visible
+                        System.out.println("Trying to show the circularProgressBar");
+                        circularProgressIndicator.setVisibility(View.VISIBLE);
+                        circularProgressIndicator.invalidate();
+                    }
+                });
+
                 // Adding a new entry of food
                 if (!editingFood) {
                     String foodName = foodInputText.getText().toString();
@@ -139,7 +152,7 @@ public class AddFragment extends DialogFragment {
                             imageView);
                     ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
                 }
-                dismiss();;
+                dismiss();
             }
         });
         // When cancelBtn is clicked, dismiss the dialog

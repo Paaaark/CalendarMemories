@@ -1,10 +1,9 @@
 package com.example.calendarmemories;
 
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.os.Bundle;
 
 import java.io.File;
@@ -14,23 +13,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import android.net.Uri;
 
-import java.net.URI;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -50,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDivider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -60,20 +53,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 /**
  * A simple {@link Fragment} subclass.
  */
 public class DailyFragment extends Fragment {
 
-    private static float FOOD_NAME_TEXT_SIZE = 18f;
-    private static float MEAL_TYPE_TEXT_SIZE = 10f;
-    private static float FOOD_IMAGE_WEIGHT = 1f;
-    private static float FOOD_TEXT_WEIGHT = 15f;
-    private static float FOOD_BTN_WEIGHT = 0f;
-    private static int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
-    private static int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
+    private static final float FOOD_NAME_TEXT_SIZE = 18f;
+    private static final float MEAL_TYPE_TEXT_SIZE = 10f;
+    private static final float FOOD_IMAGE_WEIGHT = 1f;
+    private static final float FOOD_TEXT_WEIGHT = 15f;
+    private static final int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
+    private static final int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
     private static final String DATE_PICKER_TITLE = "select date";
     public static final String WITH_WHO_TEXT_PREFIX = "Ate with: ";
 
@@ -84,9 +74,8 @@ public class DailyFragment extends Fragment {
     private View v;
     private ConstraintLayout constraintLayout;
     private File currentFile = null;
-    private static DailyMemory dailyMemory;
-    private LinearLayout.LayoutParams layoutParams;
-    private static LinearLayout foodLinearLayout;
+    private DailyMemory dailyMemory;
+    private LinearLayout foodLinearLayout;
 
     private static String userDataDir = "userData";
     private String userID = "tempUser";
@@ -240,7 +229,6 @@ public class DailyFragment extends Fragment {
             foodLinearLayout.removeViewAt(i);
         }
         // Add views in the panel
-        System.out.println("Food size:" + dailyMemory.getNumFood());
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
             Food food = dailyMemory.getFoodAt(i);
             foodLinearLayout.addView(getCardListView(food));
@@ -351,15 +339,28 @@ public class DailyFragment extends Fragment {
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                foodLinearLayout.removeView(container);
-                deleteFoodFromDatabase(food);
+                // #TODO: Change the title of the builder
+                getAlertDialogBuilder(R.string.delete_alert_title, R.string.delete_alert_msg)
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                foodLinearLayout.removeView(container);
+                                deleteFoodFromDatabase(food);
+                                getSnackbar(foodLinearLayout, R.string.food_deleted_msg,
+                                        Snackbar.LENGTH_SHORT, floatingBtn).show();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) { }
+                        })
+                        .show();
             }
         });
         Button editBtn = container.findViewById(R.id.listCardEditBtn);
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // #TODO: Edit btn action
                 AddFragment myAddFragment = new AddFragment(food, container);
                 myAddFragment.show(
                         getChildFragmentManager(), AddFragment.TAG
@@ -465,15 +466,15 @@ public class DailyFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Snackbar.make(foodLinearLayout, R.string.food_add_success_msg,
-                                Snackbar.LENGTH_SHORT).show();
+                        getSnackbar(foodLinearLayout, R.string.add_success_msg,
+                                Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(foodLinearLayout, R.string.food_add_failed_msg,
-                                Snackbar.LENGTH_LONG).show();
+                        getSnackbar(foodLinearLayout, R.string.add_failed_msg,
+                                Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
     }
@@ -486,15 +487,15 @@ public class DailyFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Snackbar.make(foodLinearLayout, "Entry successfully modified!",
-                                Snackbar.LENGTH_SHORT).show();
+                        getSnackbar(foodLinearLayout, R.string.modify_success_msg,
+                                Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(foodLinearLayout, "Filaed to modify. Please try again",
-                                Snackbar.LENGTH_LONG).show();
+                        getSnackbar(foodLinearLayout, R.string.modify_failed_msg,
+                                Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
     }
@@ -527,5 +528,20 @@ public class DailyFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private MaterialAlertDialogBuilder getAlertDialogBuilder(int titleRes, int msgRes) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+                .setTitle(titleRes)
+                .setMessage(msgRes);
+        return builder;
+    }
+
+    private Snackbar getSnackbar(View v, int msgRes, int duration, View anchor) {
+        if (anchor == null) {
+            return Snackbar.make(v, msgRes, duration);
+        } else {
+            return Snackbar.make(v, msgRes, duration).setAnchorView(anchor);
+        }
     }
 }

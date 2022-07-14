@@ -13,6 +13,14 @@
         <item>Dinner</item>
         <item>Snack</item>
     </string-array>
-    <string name="food_add_success_msg">Food successfully added!</string>
-    <string name="food_add_failed_msg">Failed to add. Please try again.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_alert_title">Delete food entry?</string>
+    <string name="delete_alert_msg">You will not be able to retrieve it permanently.</string>
+    <string name="add_success_msg">Food successfully added!</string>
+    <string name="add_failed_msg">Failed to add. Please try again.</string>
+    <string name="modify_success_msg">Food successfully modified!</string>
+    <string name="modify_failed_msg">Failed to modify. Please try again.</string>
+    <!-- #TODO: Change the food_delete_msg -->
+    <string name="food_deleted_msg">Food entry deleted.</string>
 </resources>

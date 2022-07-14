@@ -33,13 +33,13 @@ public class DailyMemory {
             for (String key : data.keySet()) {
                 if (!key.equals(NUM_FOOD_KEY)) {
                     foods.add(new Food((HashMap<String, Object>) data.get(key)));
+                    idTemplate = Math.max(idTemplate, foods.get(foods.size() - 1).getFoodIDInt() + 1);
                 }
             }
         } else {
             // #TODO: Document not found response
             System.out.println("Document does not exist");
         }
-        idTemplate = foods.size();
     }
 
     @Deprecated
