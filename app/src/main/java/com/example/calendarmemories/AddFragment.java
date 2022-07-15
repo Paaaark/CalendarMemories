@@ -1,6 +1,8 @@
 package com.example.calendarmemories;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.DialogFragment;
@@ -9,10 +11,13 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.view.KeyEvent;
@@ -54,19 +59,26 @@ public class AddFragment extends DialogFragment {
     private LinearLayout container;
     private Food food;
     private boolean imgViewFlag = true;
+    private String foodID;
 
     public static String TAG = "AddDialogFragment";
     private static final String IMAGE_PICKER_TITLE = "Select an image";
     private static final String EMPTY_STRING = "";
+    private static final int TAKE_PICTURE = 0;
+    private static final int SELECT_PICTURE = 1;
+    private static final String MIME_TYPE = "image/png";
 
-    public AddFragment() {
+    public AddFragment(String foodID) {
         super(R.layout.fragment_add);
+        this.foodID = foodID;
     }
 
-    public AddFragment(Food food, LinearLayout container) {
+    public AddFragment(Food food, LinearLayout container, String foodID) {
         super(R.layout.fragment_add);
         this.food = food;
         this.container = container;
+        this.foodID = foodID;
+        food.setFoodID(foodID);
         editingFood = true;
     }
 
@@ -137,6 +149,7 @@ public class AddFragment extends DialogFragment {
                     } else {
                         food = new Food(imgUri.toString(), foodName, mealType, withWho, sideNotes);
                     }
+                    food.setFoodID(foodID);
                     System.out.println("*****Parent: " + getParentFragment());
                     ((DailyFragment) getParentFragment()).addFood(food);
                 } else {
@@ -187,7 +200,22 @@ public class AddFragment extends DialogFragment {
         addImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageChooser();
+                String[] takeOrSelect = getResources().getStringArray(R.array.takeOrSelect);
+                new MaterialAlertDialogBuilder(getContext())
+                        .setItems(takeOrSelect, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                switch (i) {
+                                    case TAKE_PICTURE:
+                                        imageSelector();
+                                        break;
+                                    case SELECT_PICTURE:
+                                        imageChooser();
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
             }
         });
         foodImgView.setOnClickListener(new View.OnClickListener() {
@@ -223,6 +251,13 @@ public class AddFragment extends DialogFragment {
         });
     }
 
+    public void imageSelector() {
+        imgUri = getImgUri();
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                .putExtra(MediaStore.EXTRA_OUTPUT, imgUri);
+        launchImagePicker.launch(takePicture);
+    }
+
     public void imageChooser() {
         Intent imagePicker = new Intent()
                 .setType("image/*")
@@ -230,19 +265,26 @@ public class AddFragment extends DialogFragment {
         launchImagePicker.launch(imagePicker);
     }
 
-    ActivityResultLauncher<Intent> launchImagePicker
-            = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null && data.getData() != null) {
-                        Uri selectedImageUri = data.getData();
-                        System.out.println("Selected img uri path: " + selectedImageUri.getPath());
-                        int width = foodImgView.getWidth();
-                        putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
-                        // #TODO: Food image icon to have a certain color
-                        foodImgView.clearColorFilter();
-                        imgUri = selectedImageUri;
+    ActivityResultLauncher<Intent> launchImagePicker = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        if (intent == null) {
+                            Uri selectedImageUri = imgUri;
+                            System.out.println("Uri: " + selectedImageUri.toString());
+                            int width = foodImgView.getWidth();
+                            putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
+                        } else if (intent != null && intent.getData() != null) {
+                            Uri selectedImageUri = intent.getData();
+                            System.out.println("Selected img uri path: " + selectedImageUri.getPath());
+                            int width = foodImgView.getWidth();
+                            putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
+                            // #TODO: Food image icon to have a certain color
+                            imgUri = selectedImageUri;
+                        }
                     }
                 }
             });
@@ -275,6 +317,12 @@ public class AddFragment extends DialogFragment {
         return builder;
     }
 
+    private MaterialAlertDialogBuilder getTwoOptionsAlertDialogBuilder(int titleRes, int msgRes) {
+        // #TODO: String array adapting
+        MaterialAlertDialogBuilder builder = getAlertDialogBuilder(titleRes, msgRes);
+        return builder;
+    }
+
     private boolean changesMade() {
         if (editingFood) {
             if (!food.getFoodName().equals(foodInputText.getText().toString()) ||
@@ -294,5 +342,21 @@ public class AddFragment extends DialogFragment {
             }
         }
         return false;
+    }
+
+    private Uri getImgUri() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentResolver resolver = getContext().getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, foodID);
+            contentValues.put(MediaStore.MediaColumns.MIME_TYPE, MIME_TYPE);
+            contentValues.put(
+                    MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + foodID);
+            return resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+        } else {
+            File imagesDir = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES).toString() + File.separator + foodID);
+            return Uri.fromFile(imagesDir);
+        }
     }
 }

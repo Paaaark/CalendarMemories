@@ -13,6 +13,10 @@
         <item>Dinner</item>
         <item>Snack</item>
     </string-array>
+    <string-array name="takeOrSelect">
+        <item>Take a photo</item>
+        <item>Select from gallery</item>
+    </string-array>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="continue_editing">Continue editing</string>

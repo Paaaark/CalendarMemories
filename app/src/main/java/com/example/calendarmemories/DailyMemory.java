@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,23 +18,27 @@ import java.util.Map;
 public class DailyMemory {
 
     public static final String NUM_FOOD_KEY = "numFood";
+    public static final String ID_TEMPLATE_KEY = "idTemplate";
 
     private ArrayList<Food> foods;
     private long idTemplate;
+    private LocalDate date;
 
     public DailyMemory() {
         foods = new ArrayList<Food>();
         idTemplate = 1l;
     }
 
-    public DailyMemory(DocumentSnapshot document) {
+    public DailyMemory(DocumentSnapshot document, LocalDate date) {
+        this.date = date;
         foods = new ArrayList<Food>();
         if (document.exists()) {
             Map<String, Object> data = document.getData();
             for (String key : data.keySet()) {
-                if (!key.equals(NUM_FOOD_KEY)) {
+                if (key.equals(ID_TEMPLATE_KEY)) {
+                    idTemplate = Long.parseLong(data.get(key).toString());
+                } else if (!key.equals(NUM_FOOD_KEY)) {
                     foods.add(new Food((HashMap<String, Object>) data.get(key)));
-                    idTemplate = Math.max(idTemplate, foods.get(foods.size() - 1).getFoodIDInt() + 1);
                 }
             }
         } else {
@@ -88,6 +93,10 @@ public class DailyMemory {
     }
 
     public String generateFoodID() {
-        return "Food" + Long.toString(idTemplate++);
+        return Time.toString(date) + "Food" + Long.toString(idTemplate++);
+    }
+
+    public long getIDTemplate() {
+        return idTemplate;
     }
 }

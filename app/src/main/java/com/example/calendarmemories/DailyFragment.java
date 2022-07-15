@@ -71,6 +71,8 @@ public class DailyFragment extends Fragment {
     private static final float FOOD_TEXT_WEIGHT = 15f;
     private static final int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
     private static final int MATCH_PARENT = LinearLayout.LayoutParams.MATCH_PARENT;
+    private static final int TAKE_PHOTO = -1;
+    private static final int SELECT_PHOTO = -2;
     private static final String IMAGE_MIME_TYPE = "image/png";
     private static final String DATE_PICKER_TITLE = "select date";
     public static final String WITH_WHO_TEXT_PREFIX = "Ate with: ";
@@ -154,7 +156,7 @@ public class DailyFragment extends Fragment {
         floatingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddFragment myAddFragment = new AddFragment();
+                AddFragment myAddFragment = new AddFragment(dailyMemory.generateFoodID());
                 myAddFragment.show(
                         getChildFragmentManager(), AddFragment.TAG
                 );
@@ -369,7 +371,7 @@ public class DailyFragment extends Fragment {
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddFragment myAddFragment = new AddFragment(food, container);
+                AddFragment myAddFragment = new AddFragment(food, container, dailyMemory.generateFoodID());
                 myAddFragment.show(
                         getChildFragmentManager(), AddFragment.TAG
                 );
@@ -409,7 +411,6 @@ public class DailyFragment extends Fragment {
     }
 
     public void addFood(Food food) {
-        food.setFoodID(dailyMemory.generateFoodID());
         dailyMemory.addFood(food);
 
         foodLinearLayout.addView(getCardListView(food));
@@ -446,6 +447,7 @@ public class DailyFragment extends Fragment {
         DocumentReference userDB = db.document(getDatabasePath());
         Map<String, Object> dataToAdd = new HashMap<String, Object>();
         dataToAdd.put(DailyMemory.NUM_FOOD_KEY, dailyMemory.getNumFood());
+        dataToAdd.put(DailyMemory.ID_TEMPLATE_KEY, dailyMemory.getIDTemplate());
         dataToAdd.put(food.getFoodID(), food);
         userDB.set(dataToAdd, SetOptions.merge())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -505,7 +507,7 @@ public class DailyFragment extends Fragment {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    dailyMemory = new DailyMemory(document);
+                    dailyMemory = new DailyMemory(document, date);
                     updatePanel();
                 } else {
                     // #TODO: Failed task response
