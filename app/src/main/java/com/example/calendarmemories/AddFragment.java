@@ -6,7 +6,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -14,12 +13,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,16 +32,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.calendarmemories.databinding.FragmentAddBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -68,6 +64,8 @@ public class AddFragment extends DialogFragment {
     private static final int TAKE_PICTURE = 0;
     private static final int SELECT_PICTURE = 1;
     private static final String MIME_TYPE = "image/png";
+    private static final int HEIGHT = 0;
+    private static final int WIDTH = 0;
 
     public AddFragment(String foodID) {
         super(R.layout.fragment_add);
@@ -119,8 +117,7 @@ public class AddFragment extends DialogFragment {
                         @Override
                         public void onGlobalLayout() {
                             if (food.getImageFilePath() != null && imgViewFlag) {
-                                putImageInView(food.getImageFilePath(), foodImgView.getWidth(),
-                                        getImageHeight(foodImgView.getHeight()), foodImgView);
+                                putImageInView(food.getImageFilePath(), foodImgView.getWidth(), foodImgView);
                                 imgViewFlag = false;
                             }
                             foodImgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -168,8 +165,7 @@ public class AddFragment extends DialogFragment {
                             DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
                     ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
                     ImageView imageView = container.findViewById(R.id.listCardImageContainer);
-                    putImageInView(food.getImageFilePath(), imageView.getWidth(), imageView.getHeight(),
-                            imageView);
+                    putImageInView(food.getImageFilePath(), imageView.getWidth(), imageView);
                     ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
                 }
                 dismiss();
@@ -201,28 +197,13 @@ public class AddFragment extends DialogFragment {
         addImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] takeOrSelect = getResources().getStringArray(R.array.takeOrSelect);
-                new MaterialAlertDialogBuilder(getContext())
-                        .setItems(takeOrSelect, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                switch (i) {
-                                    case TAKE_PICTURE:
-                                        imageSelector();
-                                        break;
-                                    case SELECT_PICTURE:
-                                        imageChooser();
-                                        break;
-                                }
-                            }
-                        })
-                        .show();
+                showTwoOptionsAlertDialogBuilder();
             }
         });
         foodImgView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageChooser();
+                showTwoOptionsAlertDialogBuilder();
             }
         });
 
@@ -277,12 +258,12 @@ public class AddFragment extends DialogFragment {
                             Uri selectedImageUri = imgUri;
                             System.out.println("Uri: " + selectedImageUri.toString());
                             int width = foodImgView.getWidth();
-                            putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
+                            putImageInView(selectedImageUri, width, foodImgView);
                         } else if (intent != null && intent.getData() != null) {
                             Uri selectedImageUri = intent.getData();
                             System.out.println("Selected img uri path: " + selectedImageUri.getPath());
                             int width = foodImgView.getWidth();
-                            putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
+                            putImageInView(selectedImageUri, width, foodImgView);
                             // #TODO: Food image icon to have a certain color
                             imgUri = selectedImageUri;
                         }
@@ -294,21 +275,44 @@ public class AddFragment extends DialogFragment {
         return (int) (width * 9.0 / 16.0);
     }
 
-    private void putImageInView(String imageFilePath, int width, int height, ImageView view) {
+    private void putImageInView(String imageFilePath, int maxSide, ImageView view) {
         if (imageFilePath == null) return;
-        Uri imageUri = Uri.parse(imageFilePath);
-        Glide.with(getContext()).load(imageUri)
+        Uri imgUri = Uri.parse(imageFilePath);
+        putImageInView(imgUri, maxSide, view);
+    }
+
+    private void putImageInView(Uri imgUri, int maxSide, ImageView view) {
+        if (imgUri == null) return;
+        int size[] = getImgSize(imgUri, maxSide);
+        Glide.with(getContext()).load(imgUri)
                 .centerCrop()
-                .apply(new RequestOptions().override(width, height))
+                .apply(new RequestOptions().override(size[WIDTH], size[HEIGHT]))
                 .into(view);
     }
 
-    private void putImageInView(Uri imgUri, int width, int height, ImageView view) {
-        if (imgUri == null) return;
-        Glide.with(getContext()).load(imgUri)
-                .centerCrop()
-                .apply(new RequestOptions().override(width, height))
-                .into(view);
+    private int[] getImgSize(Uri imageUri, int maxSide) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+
+        ParcelFileDescriptor fd = null;
+        try {
+            fd = getContext().getContentResolver().openFileDescriptor(imageUri, "r");
+        } catch (FileNotFoundException e) {
+            return new int[2];
+        }
+
+        BitmapFactory.decodeFileDescriptor(fd.getFileDescriptor(), null, options);
+        int[] size = { options.outHeight, options.outWidth };
+        if (size[HEIGHT] > size[WIDTH]) {
+            double multiplier = size[HEIGHT] / size[WIDTH];
+            size[WIDTH] = maxSide;
+            size[HEIGHT] = (int) (maxSide * multiplier);
+        } else {
+            double multiplier = size[WIDTH] / size[HEIGHT];
+            size[HEIGHT] = maxSide;
+            size[WIDTH] = (int) (maxSide * multiplier);
+        }
+        return size;
     }
 
     private MaterialAlertDialogBuilder getAlertDialogBuilder(int titleRes, int msgRes) {
@@ -318,10 +322,23 @@ public class AddFragment extends DialogFragment {
         return builder;
     }
 
-    private MaterialAlertDialogBuilder getTwoOptionsAlertDialogBuilder(int titleRes, int msgRes) {
+    private void showTwoOptionsAlertDialogBuilder() {
         // #TODO: String array adapting
-        MaterialAlertDialogBuilder builder = getAlertDialogBuilder(titleRes, msgRes);
-        return builder;
+        String[] takeOrSelect = getResources().getStringArray(R.array.takeOrSelect);
+        new MaterialAlertDialogBuilder(getContext())
+            .setItems(takeOrSelect, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    switch (i) {
+                        case TAKE_PICTURE:
+                            imageSelector();
+                            break;
+                        case SELECT_PICTURE:
+                            imageChooser();
+                            break;
+                    }
+                }
+            }).show();
     }
 
     private boolean changesMade() {
