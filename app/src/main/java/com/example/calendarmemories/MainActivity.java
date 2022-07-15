@@ -73,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
         if (fragment instanceof DailyFragment) {
-            // Do nothing
+            System.out.println("DailyFragment instance");
+        } else if (fragment instanceof AddFragment) {
+            System.out.println("AddFragment instance");
         } else {
             super.onBackPressed();
         }

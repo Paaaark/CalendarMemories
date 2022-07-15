@@ -1,5 +1,6 @@
 package com.example.calendarmemories;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.DialogFragment;
@@ -8,11 +9,13 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -24,12 +27,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.calendarmemories.databinding.FragmentAddBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +57,7 @@ public class AddFragment extends DialogFragment {
 
     public static String TAG = "AddDialogFragment";
     private static final String IMAGE_PICKER_TITLE = "Select an image";
+    private static final String EMPTY_STRING = "";
 
     public AddFragment() {
         super(R.layout.fragment_add);
@@ -67,6 +73,10 @@ public class AddFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        // To listen to back button
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
 
         // Set the size of the dialog to match the parent
         Dialog dialog = getDialog();
@@ -106,7 +116,7 @@ public class AddFragment extends DialogFragment {
             foodInputText.setText(food.getFoodName());
             withWhoInputText.setText(food.getWithWho());
             sideNotesInputText.setText(food.getSideNotes());
-            mealTypeInput.setText(food.getMealType());
+            mealTypeInput.setText(food.getMealType(), false);
         }
 
         // #TODO: Add button actions
@@ -115,28 +125,25 @@ public class AddFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
 
-                circularProgressIndicator.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // #TODO: CircularProgressIndicator not visible
-                        System.out.println("Trying to show the circularProgressBar");
-                        circularProgressIndicator.setVisibility(View.VISIBLE);
-                        circularProgressIndicator.invalidate();
-                    }
-                });
-
                 // Adding a new entry of food
                 if (!editingFood) {
                     String foodName = foodInputText.getText().toString();
                     String mealType = mealTypeInput.getText().toString();
                     String withWho = withWhoInputText.getText().toString();
                     String sideNotes = sideNotesInputText.getText().toString();
-                    Food food = new Food(imgUri.toString(), foodName, mealType, withWho, sideNotes);
+                    Food food;
+                    if (imgUri == null) {
+                        food = new Food(null, foodName, mealType, withWho, sideNotes);
+                    } else {
+                        food = new Food(imgUri.toString(), foodName, mealType, withWho, sideNotes);
+                    }
                     System.out.println("*****Parent: " + getParentFragment());
                     ((DailyFragment) getParentFragment()).addFood(food);
                 } else {
                     // Modifying an existing entry
-                    food.setImageFilePath(imgUri.toString());
+                    if (imgUri != null) {
+                        food.setImageFilePath(imgUri.toString());
+                    }
                     food.setFoodName(foodInputText.getText().toString());
                     food.setMealType(mealTypeInput.getText().toString());
                     food.setWithWho(withWhoInputText.getText().toString());
@@ -159,7 +166,20 @@ public class AddFragment extends DialogFragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dismiss();
+                if (changesMade()) {
+                    getAlertDialogBuilder(R.string.back_button_alert_title,
+                            R.string.back_button_alert_msg)
+                            .setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.continue_editing, null)
+                            .show();
+                } else {
+                    dismiss();
+                }
             }
         });
         // #TODO: addImgBtn logic
@@ -174,6 +194,31 @@ public class AddFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 imageChooser();
+            }
+        });
+
+        dialog.setCancelable(false);
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (changesMade()) {
+                        getAlertDialogBuilder(R.string.back_button_alert_title,
+                                R.string.back_button_alert_msg)
+                                .setPositiveButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.continue_editing, null)
+                                .show();
+                    } else {
+                        dismiss();
+                    }
+                    return true;
+                }
+                return false;
             }
         });
     }
@@ -194,10 +239,7 @@ public class AddFragment extends DialogFragment {
                         Uri selectedImageUri = data.getData();
                         System.out.println("Selected img uri path: " + selectedImageUri.getPath());
                         int width = foodImgView.getWidth();
-                        Picasso.get().load(selectedImageUri)
-                                .resize(width, getImageHeight(width))
-                                .centerCrop()
-                                .into(foodImgView);
+                        putImageInView(selectedImageUri, width, getImageHeight(width), foodImgView);
                         // #TODO: Food image icon to have a certain color
                         foodImgView.clearColorFilter();
                         imgUri = selectedImageUri;
@@ -210,6 +252,7 @@ public class AddFragment extends DialogFragment {
     }
 
     private void putImageInView(String imageFilePath, int width, int height, ImageView view) {
+        if (imageFilePath == null) return;
         Uri imageUri = Uri.parse(imageFilePath);
         Picasso.get().load(imageUri)
                 .resize(width, height)
@@ -217,10 +260,39 @@ public class AddFragment extends DialogFragment {
                 .into(view);
     }
 
-    private void putImageInView(Uri imageUri, int width, int height, ImageView view) {
-        Picasso.get().load(imageUri)
+    private void putImageInView(Uri imgUri, int width, int height, ImageView view) {
+        if (imgUri == null) return;
+        Picasso.get().load(imgUri)
                 .resize(width, height)
                 .centerCrop()
                 .into(view);
+    }
+
+    private MaterialAlertDialogBuilder getAlertDialogBuilder(int titleRes, int msgRes) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
+                .setTitle(titleRes)
+                .setMessage(msgRes);
+        return builder;
+    }
+
+    private boolean changesMade() {
+        if (editingFood) {
+            if (!food.getFoodName().equals(foodInputText.getText().toString()) ||
+                    !food.getMealType().equals(mealTypeInput.getText().toString()) ||
+                    !food.getWithWho().equals(withWhoInputText.getText().toString()) ||
+                    !food.getSideNotes().equals(sideNotesInputText.getText().toString()) ||
+                    !food.getImageFilePath().equals(imgUri.toString())) {
+                return true;
+            }
+        } else {
+            if (!foodInputText.getText().toString().equals(EMPTY_STRING) ||
+                !mealTypeInput.getText().toString().equals(EMPTY_STRING) ||
+                !withWhoInputText.getText().toString().equals(EMPTY_STRING) ||
+                !sideNotesInputText.getText().toString().equals(EMPTY_STRING) ||
+                imgUri != null) {
+                return true;
+            }
+        }
+        return false;
     }
 }
