@@ -42,6 +42,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -58,7 +60,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.squareup.picasso.Picasso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -385,9 +386,9 @@ public class DailyFragment extends Fragment {
                     public void onGlobalLayout() {
                         if (food.getImageFilePath() != null) {
                             Uri imageUri = Uri.parse(food.getImageFilePath());
-                            Picasso.get().load(imageUri)
-                                    .resize(imgView.getWidth(), imgView.getWidth())
+                            Glide.with(getContext()).load(imageUri)
                                     .centerCrop()
+                                    .apply(new RequestOptions().override(imgView.getWidth()))
                                     .into(imgView);
                         }
                         imgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);

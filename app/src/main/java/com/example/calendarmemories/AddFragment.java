@@ -31,11 +31,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.calendarmemories.databinding.FragmentAddBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -296,17 +297,17 @@ public class AddFragment extends DialogFragment {
     private void putImageInView(String imageFilePath, int width, int height, ImageView view) {
         if (imageFilePath == null) return;
         Uri imageUri = Uri.parse(imageFilePath);
-        Picasso.get().load(imageUri)
-                .resize(width, height)
+        Glide.with(getContext()).load(imageUri)
                 .centerCrop()
+                .apply(new RequestOptions().override(width, height))
                 .into(view);
     }
 
     private void putImageInView(Uri imgUri, int width, int height, ImageView view) {
         if (imgUri == null) return;
-        Picasso.get().load(imgUri)
-                .resize(width, height)
+        Glide.with(getContext()).load(imgUri)
                 .centerCrop()
+                .apply(new RequestOptions().override(width, height))
                 .into(view);
     }
 
