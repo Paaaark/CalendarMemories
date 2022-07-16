@@ -119,7 +119,7 @@ public class DailyFragment extends Fragment {
             public void onClick(View view) {
                 MaterialDatePicker picker = MaterialDatePicker.Builder.datePicker()
                         .setTitleText(DATE_PICKER_TITLE)
-                        .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                        .setSelection(Time.inMillis(date))
                         .build();
                 // #TODO: Remove programmed string
                 picker.show(getChildFragmentManager(), "Tag");

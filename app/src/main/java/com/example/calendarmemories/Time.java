@@ -1,8 +1,11 @@
 package com.example.calendarmemories;
 
+import com.google.android.material.datepicker.CalendarConstraints;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Locale;
 
 public class Time {
@@ -53,5 +56,30 @@ public class Time {
             case SUNDAY: return 0;
         }
         return -1;
+    }
+
+    public static long inMillis(LocalDate today) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
+        return calendar.getTimeInMillis();
+    }
+
+    public static CalendarConstraints getCalendarConstraints(LocalDate today) {
+        CalendarConstraints.Builder builder = new CalendarConstraints.Builder()
+                .setStart(startInMillis(today))
+                .setEnd(endInMillis(today));
+        return builder.build();
+    }
+
+    private static long startInMillis(LocalDate today) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(today.getYear(), today.getMonthValue() - 1, 1);
+        return calendar.getTimeInMillis();
+    }
+
+    private static long endInMillis(LocalDate today) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(today.getYear(), today.getMonthValue() - 1, today.lengthOfMonth());
+        return calendar.getTimeInMillis();
     }
 }

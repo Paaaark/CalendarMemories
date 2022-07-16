@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,6 +30,7 @@ public class CalendarFragment extends Fragment {
 
     private LocalDate date;
     private Button monthBtn, leftMonthBtn, rightMonthBtn;
+    private FloatingActionButton floatingBtn;
     ArrayList<LinearLayout> weeklyEntries;
     ArrayList<LinearLayout> calendarEntries;
     Map<String, Integer> dayToIndex;
@@ -94,6 +96,17 @@ public class CalendarFragment extends Fragment {
                 updatePanels();
             }
         });
+        floatingBtn = v.findViewById(R.id.floatingBtn);
+        floatingBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // #TODO: CalendarView add food
+                AddFragment myAddFragment = new AddFragment(date);
+                myAddFragment.show(
+                        getChildFragmentManager(), AddFragment.TAG
+                );
+            }
+        });
 
         return v;
     }
@@ -141,6 +154,14 @@ public class CalendarFragment extends Fragment {
 
     private void getDailyMemoryAndUpdatePanel(LinearLayout dayLayout, LocalDate date,
                                                      FirebaseFirestore db) {
+        // If the object already exists, use cached data
+        if (dailyMemories.containsKey(Time.getDayID(date))) {
+            DailyMemory dailyMemory = dailyMemories.get(Time.getDayID(date));
+            for (int i = 0; i < dailyMemory.getNumFood(); i++) {
+                dayLayout.addView(getTextView(dailyMemory.getFoodAt(i).getFoodName()));
+            }
+        }
+        // Otherwise, get the data
         DocumentReference userDB = db.document(getDatabasePath(date));
         userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

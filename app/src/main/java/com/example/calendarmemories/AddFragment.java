@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
@@ -32,6 +33,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
@@ -39,6 +42,10 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -48,18 +55,22 @@ public class AddFragment extends DialogFragment {
 
     private Button addConfirmBtn, cancelBtn, addImgBtn;
     private TextInputEditText foodInputText, withWhoInputText, sideNotesInputText;
+    private TextView todaysDate;
     private CircularProgressIndicator circularProgressIndicator;
     private AutoCompleteTextView mealTypeInput;
     private ImageView foodImgView;
     private Uri imgUri = null;
     private boolean editingFood = false;
+    private boolean imgViewFlag = true;
+    private boolean fromCalendar = false;
     private LinearLayout container;
     private Food food;
-    private boolean imgViewFlag = true;
     private String foodID;
+    private LocalDate date;
 
     public static String TAG = "AddDialogFragment";
     private static final String IMAGE_PICKER_TITLE = "Select an image";
+    private static final String DATE_PICKER_TITLE = "Select date";
     private static final String EMPTY_STRING = "";
     private static final int TAKE_PICTURE = 0;
     private static final int SELECT_PICTURE = 1;
@@ -79,6 +90,12 @@ public class AddFragment extends DialogFragment {
         this.foodID = foodID;
         food.setFoodID(foodID);
         editingFood = true;
+    }
+
+    public AddFragment(LocalDate date) {
+        super(R.layout.fragment_add);
+        this.date = date;
+        this.fromCalendar = true;
     }
 
     @Override
@@ -108,6 +125,37 @@ public class AddFragment extends DialogFragment {
         mealTypeInput = getView().findViewById(R.id.autoCompleteMealType);
         foodImgView = getView().findViewById(R.id.foodImgView);
         circularProgressIndicator = getView().findViewById(R.id.circularProgressIndicator);
+        todaysDate = getView().findViewById(R.id.todaysDate);
+
+        // If we got here from calendarView, add a date picker
+        if (fromCalendar) {
+            todaysDate.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            todaysDate.setText(Time.toString(date));
+            todaysDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MaterialDatePicker picker = MaterialDatePicker.Builder.datePicker()
+                            .setTitleText(DATE_PICKER_TITLE)
+                            .setSelection(Time.inMillis(date))
+                            .setCalendarConstraints(Time.getCalendarConstraints(date))
+                            .build();
+                    // #TODO: Remove programmed string
+                    picker.show(getChildFragmentManager(), "Tag");
+                    picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
+                        @Override
+                        public void onPositiveButtonClick(Object selection) {
+                            Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+                            calendar.setTimeInMillis((Long) selection);
+                            LocalDate newDate = LocalDate.of(calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH) + 1,
+                                    calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                            date = newDate;
+                        }
+                    });
+                }
+            });
+        }
 
         // If we are in editing mode, initialize the texts into the textViews
         if (editingFood) {
@@ -149,7 +197,12 @@ public class AddFragment extends DialogFragment {
                     }
                     food.setFoodID(foodID);
                     System.out.println("*****Parent: " + getParentFragment());
-                    ((DailyFragment) getParentFragment()).addFood(food);
+                    if (getParentFragment() instanceof DailyFragment) {
+                        ((DailyFragment) getParentFragment()).addFood(food);
+                    } else if (getParentFragment() instanceof CalendarFragment) {
+                        // #TODO: Calendar fragment add food
+                        //((CalendarFragment) getParentFragment()).addFood(food);
+                    }
                 } else {
                     // Modifying an existing entry
                     if (imgUri != null) {
