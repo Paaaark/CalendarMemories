@@ -85,6 +85,7 @@ public class DailyFragment extends Fragment {
     private DailyMemory dailyMemory;
     private LinearLayout foodLinearLayout;
 
+    // #TODO: User authentification
     private static String userDataDir = "userData";
     private String userID = "tempUser";
     private static String foodDir = "foodData";
@@ -485,11 +486,11 @@ public class DailyFragment extends Fragment {
                 });
     }
 
-    public String getDatabasePath() {
+    private String getDatabasePath() {
         return joinPath(userDataDir, userID, foodDir, Time.getDayID(date));
     }
 
-    public String joinPath(String ... dirs) {
+    private String joinPath(String ... dirs) {
         String path = "";
         for (int i = 0; i < dirs.length; i++) {
             if (i != 0) path += "/";

@@ -23,4 +23,18 @@
         <item name="android:minWidth">36dp</item>
         <item name="android:minHeight">36dp</item>
     </style>
+    <style name="calendar_week_layout_param">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+    </style>
+    <style name="calendar_food_entry">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="maxLines">1</item>
+        <item name="android:textSize">12dp</item>
+    </style>
 </resources>

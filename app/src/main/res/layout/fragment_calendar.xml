@@ -84,16 +84,22 @@
     </LinearLayout>
 
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekOne"/>
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekTwo"/>
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekThree"/>
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekFour"/>
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekFive"/>
     <include layout="@layout/calendar_week"
+        style="@style/calendar_week_layout_param"
         android:id="@+id/weekSix"/>
 
 </LinearLayout>
