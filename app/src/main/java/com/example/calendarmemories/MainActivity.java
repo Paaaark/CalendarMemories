@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
                     case DAILY_TAB:
                         fragmentTransaction.replace(R.id.mainFragmentContainer, DailyFragment.class, null);
                         break;
+                    case MONTHLY_TAB:
+                        fragmentTransaction.replace(R.id.mainFragmentContainer, CalendarFragment.class, null);
+                        break;
                 }
                 fragmentTransaction.setReorderingAllowed(true)
                         .addToBackStack(null)
