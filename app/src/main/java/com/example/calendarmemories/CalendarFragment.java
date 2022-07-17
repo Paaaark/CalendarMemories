@@ -1,5 +1,7 @@
 package com.example.calendarmemories;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -39,6 +41,7 @@ public class CalendarFragment extends Fragment {
     ArrayList<LinearLayout> calendarEntries;
     Map<String, Integer> dayToIndex;
     Map<String, DailyMemory> dailyMemories;
+    private LinearLayout highlightedDay;
 
     private static final int TOTAL_ENTRIES = 42;
     private static final float DIMMED_TEXT = 0.2f;
@@ -111,7 +114,20 @@ public class CalendarFragment extends Fragment {
                 );
             }
         });
-
+        highlightedDay = calendarEntries.get(dayToIndex.get(Time.getDayID(date)));
+        highlightedDay.setBackgroundResource(R.drawable.calendar_border);
+        for (LinearLayout day: calendarEntries) {
+            day.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (highlightedDay != null) {
+                        highlightedDay.setBackground(new ColorDrawable(Color.TRANSPARENT));
+                    }
+                    day.setBackgroundResource(R.drawable.calendar_border);
+                    highlightedDay = day;
+                }
+            });
+        }
         return v;
     }
 

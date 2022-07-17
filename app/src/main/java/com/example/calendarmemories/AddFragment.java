@@ -151,6 +151,7 @@ public class AddFragment extends DialogFragment {
                                     calendar.get(Calendar.MONTH) + 1,
                                     calendar.get(Calendar.DAY_OF_MONTH) + 1);
                             date = newDate;
+                            todaysDate.setText(Time.toString(date));
                         }
                     });
                 }
