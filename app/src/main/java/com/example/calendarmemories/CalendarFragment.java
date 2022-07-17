@@ -14,11 +14,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -196,6 +200,38 @@ public class CalendarFragment extends Fragment {
         calendarEntries.add(layout.findViewById(R.id.dayFive));
         calendarEntries.add(layout.findViewById(R.id.daySix));
         calendarEntries.add(layout.findViewById(R.id.daySeven));
+    }
+
+    public void addFood(Food food, LocalDate date) {
+        DailyMemory dailyMemory = dailyMemories.get(Time.getDayID(date));
+        food.setFoodID(dailyMemory.generateFoodID());
+        dailyMemory.addFood(food);
+        LinearLayout layout = calendarEntries.get(dayToIndex.get(Time.getDayID(date)));
+        layout.addView(getTextView(food.getFoodName()));
+        addFoodToDatabase(food, date, dailyMemory);
+    }
+
+    private void addFoodToDatabase(Food food, LocalDate target, DailyMemory dailyMemory) {
+        DocumentReference userDB = db.document(getDatabasePath(target));
+        Map<String, Object> dataToAdd = new HashMap<String, Object>();
+        dataToAdd.put(DailyMemory.NUM_FOOD_KEY, dailyMemory.getNumFood());
+        dataToAdd.put(DailyMemory.ID_TEMPLATE_KEY, dailyMemory.getIDTemplate());
+        dataToAdd.put(food.getFoodID(), food);
+        userDB.set(dataToAdd, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        ViewHelper.getSnackbar(getView(), R.string.add_success_msg,
+                                Snackbar.LENGTH_SHORT, floatingBtn).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        ViewHelper.getSnackbar(getView(), R.string.add_failed_msg,
+                                Snackbar.LENGTH_LONG, floatingBtn).show();
+                    }
+                });
     }
 
     private String getDatabasePath(LocalDate target) {

@@ -201,7 +201,7 @@ public class AddFragment extends DialogFragment {
                         ((DailyFragment) getParentFragment()).addFood(food);
                     } else if (getParentFragment() instanceof CalendarFragment) {
                         // #TODO: Calendar fragment add food
-                        //((CalendarFragment) getParentFragment()).addFood(food);
+                        ((CalendarFragment) getParentFragment()).addFood(food, date);
                     }
                 } else {
                     // Modifying an existing entry

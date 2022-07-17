@@ -355,7 +355,7 @@ public class DailyFragment extends Fragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 foodLinearLayout.removeView(container);
                                 deleteFoodFromDatabase(food);
-                                getSnackbar(foodLinearLayout, R.string.food_deleted_msg,
+                                ViewHelper.getSnackbar(foodLinearLayout, R.string.food_deleted_msg,
                                         Snackbar.LENGTH_SHORT, floatingBtn).show();
                             }
                         })
@@ -452,14 +452,14 @@ public class DailyFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        getSnackbar(foodLinearLayout, R.string.add_success_msg,
+                        ViewHelper.getSnackbar(foodLinearLayout, R.string.add_success_msg,
                                 Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        getSnackbar(foodLinearLayout, R.string.add_failed_msg,
+                        ViewHelper.getSnackbar(foodLinearLayout, R.string.add_failed_msg,
                                 Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
@@ -473,14 +473,14 @@ public class DailyFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        getSnackbar(foodLinearLayout, R.string.modify_success_msg,
+                        ViewHelper.getSnackbar(foodLinearLayout, R.string.modify_success_msg,
                                 Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        getSnackbar(foodLinearLayout, R.string.modify_failed_msg,
+                        ViewHelper.getSnackbar(foodLinearLayout, R.string.modify_failed_msg,
                                 Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
