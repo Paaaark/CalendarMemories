@@ -20,7 +20,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -111,6 +113,8 @@ public class AddFragment extends DialogFragment {
         if (dialog != null) {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
+        // #TODO: Rounded corners for add fragment
+        //dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_border);
 
         // Load meal types from res and load it into the dropdown
         String[] mealTypes = getResources().getStringArray(R.array.mealTypesArray);

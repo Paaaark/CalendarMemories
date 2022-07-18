@@ -35,6 +35,18 @@ public class Time {
         return today.format(dtf);
     }
 
+    public static LocalDate decodeID(String targetID) {
+        int year = Integer.parseInt(targetID.substring(0, 4));
+        int month = Integer.parseInt(targetID.substring(4, 6));
+        int day = Integer.parseInt(targetID.substring(6, 8));
+        return LocalDate.of(year, month, day);
+    }
+
+    /**
+     * Returns String of the date in BASIC_ISO_DATE format (YYYYMMDD). i.e) 20020801
+     * @param today
+     * @return
+     */
     public static String getDayID(LocalDate today) {
         return today.format(DateTimeFormatter.BASIC_ISO_DATE);
     }

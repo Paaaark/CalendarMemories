@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/calendar_border.xml" value="0.183" />
+        <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/rounded_border.xml" value="0.183" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/toggle_button_custom.xml" value="0.183" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/calendar_day.xml" value="0.17447916666666666" />

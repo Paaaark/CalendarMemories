@@ -3,15 +3,21 @@ package com.example.calendarmemories;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     FragmentContainerView fragmentContainerView;
     FragmentManager fragmentManager;
     FragmentTransaction fragmentTransaction;
+    GestureDetectorCompat gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
 
+        gestureDetector = new GestureDetectorCompat(this, new MyGestureListener());
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -56,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 fragmentTransaction.setReorderingAllowed(true)
-                        .addToBackStack(null)
                         .commit();
             }
 
@@ -83,4 +91,50 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        super.dispatchTouchEvent(event);
+        return gestureDetector.onTouchEvent(event);
+    }
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "gesture";
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        @Override
+        public boolean onDown(MotionEvent event) {
+            System.out.println("onDown Detected");
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY) {
+            System.out.println("onFling activated");
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                        if (fragment instanceof  DailyFragment) {
+                            ((DailyFragment) fragment).goYesterday();
+                        } else if (fragment instanceof CalendarFragment) {
+                            ((CalendarFragment) fragment).goLastMonth();
+                        }
+                    } else {
+                        if (fragment instanceof DailyFragment) {
+                            ((DailyFragment) fragment).goTomorrow();
+                        } else if (fragment instanceof CalendarFragment) {
+                            ((CalendarFragment) fragment).goNextMonth();
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 }

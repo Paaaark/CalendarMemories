@@ -1,11 +1,15 @@
 package com.example.calendarmemories;
 
+import android.app.FragmentContainer;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -37,6 +41,9 @@ public class CalendarFragment extends Fragment {
     private LocalDate date;
     private Button monthBtn, leftMonthBtn, rightMonthBtn;
     private FloatingActionButton floatingBtn;
+    private FragmentContainerView fragmentContainer;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
     ArrayList<LinearLayout> weeklyEntries;
     ArrayList<LinearLayout> calendarEntries;
     Map<String, Integer> dayToIndex;
@@ -85,22 +92,21 @@ public class CalendarFragment extends Fragment {
             getDailyEntriesInWeek(week);
         }
 
+        fragmentContainer = v.findViewById(R.id.calendarFragmentContainer);
         monthBtn = v.findViewById(R.id.monthBtn);
         updatePanels();
         leftMonthBtn = v.findViewById(R.id.leftMonthBtn);
         leftMonthBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                date = Time.getLastMonth(date);
-                updatePanels();
+                goLastMonth();
             }
         });
         rightMonthBtn = v.findViewById(R.id.rightMonthBtn);
         rightMonthBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                date = Time.getNextMonth(date);
-                updatePanels();
+                goNextMonth();
             }
         });
         floatingBtn = v.findViewById(R.id.floatingBtn);
@@ -120,15 +126,34 @@ public class CalendarFragment extends Fragment {
             day.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (highlightedDay != null) {
-                        highlightedDay.setBackground(new ColorDrawable(Color.TRANSPARENT));
+                    if (highlightedDay == day) {
+                        // #TODO: set the date of dailyFragment to selected date
+                        DailyFragment myDailyFragment = new DailyFragment(true);
+                        myDailyFragment.show(
+                                getChildFragmentManager(), DailyFragment.TAG
+                        );
+                    } else { // else, highlight the selected date
+                        if (highlightedDay != null) {
+                            highlightedDay.setBackground(new ColorDrawable(Color.TRANSPARENT));
+                        }
+                        day.setBackgroundResource(R.drawable.calendar_border);
+                        highlightedDay = day;
+                        date = Time.decodeID(day.getTag().toString());
                     }
-                    day.setBackgroundResource(R.drawable.calendar_border);
-                    highlightedDay = day;
                 }
             });
         }
         return v;
+    }
+
+    public void goNextMonth() {
+        date = Time.getNextMonth(date);
+        updatePanels();
+    }
+
+    public void goLastMonth() {
+        date = Time.getLastMonth(date);
+        updatePanels();
     }
 
     public void updatePanels() {
@@ -159,6 +184,7 @@ public class CalendarFragment extends Fragment {
         }
         TextView textView = dayLayout.findViewById(R.id.dayNumber);
         textView.setText(Integer.toString(date.getDayOfMonth()));
+        dayLayout.setTag(Time.getDayID(date));
         if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
             textView.setTextColor(getResources().getColor(R.color.red, getContext().getTheme()));
         } else if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {

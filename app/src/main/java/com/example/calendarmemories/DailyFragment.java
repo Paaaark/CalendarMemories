@@ -1,5 +1,6 @@
 package com.example.calendarmemories;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,18 +23,24 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.motion.widget.OnSwipe;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,7 +68,7 @@ import com.google.firebase.firestore.SetOptions;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DailyFragment extends Fragment {
+public class DailyFragment extends DialogFragment {
 
     private static final float FOOD_NAME_TEXT_SIZE = 18f;
     private static final float MEAL_TYPE_TEXT_SIZE = 10f;
@@ -74,6 +81,7 @@ public class DailyFragment extends Fragment {
     private static final String IMAGE_MIME_TYPE = "image/png";
     private static final String DATE_PICKER_TITLE = "select date";
     public static final String WITH_WHO_TEXT_PREFIX = "Ate with: ";
+    public static final String TAG = "DailyFragment";
 
     private Button dailyDateBtn, leftDateBtn, rightDateBtn;
     private Button listViewToggleBtn, galleryViewToggleBtn;
@@ -84,6 +92,7 @@ public class DailyFragment extends Fragment {
     private File currentFile = null;
     private DailyMemory dailyMemory;
     private LinearLayout foodLinearLayout;
+    private boolean fromCalendar = false;
 
     // #TODO: User authentification
     private static String userDataDir = "userData";
@@ -91,6 +100,26 @@ public class DailyFragment extends Fragment {
     private static String foodDir = "foodData";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public DailyFragment() {
+        super(R.layout.fragment_daily);
+    }
+
+    public DailyFragment(boolean fromCalendar) {
+        super(R.layout.fragment_daily);
+        this.fromCalendar = fromCalendar;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setLayout(width, height);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +129,8 @@ public class DailyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        System.out.println("onCreateView called");
+
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_daily, null, false);
         v.setClickable(true);
@@ -181,7 +212,6 @@ public class DailyFragment extends Fragment {
                 galleryViewToggleBtn.setSelected(true);
             }
         });
-
         return v;
     }
 
