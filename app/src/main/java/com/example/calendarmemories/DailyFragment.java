@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.transition.TransitionManager;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -59,6 +60,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.divider.MaterialDivider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.MaterialFadeThrough;
+import com.google.android.material.transition.platform.MaterialFade;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -187,6 +190,9 @@ public class DailyFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 AddFragment myAddFragment = new AddFragment(dailyMemory.generateFoodID());
+//                MaterialFade fade = new MaterialFade();
+//                myAddFragment.setEnterTransition(fade);
+//                TransitionManager.beginDelayedTransition(constraintLayout, fade);
                 myAddFragment.show(
                         getChildFragmentManager(), AddFragment.TAG
                 );

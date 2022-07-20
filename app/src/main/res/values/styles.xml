@@ -37,4 +37,9 @@
         <item name="maxLines">1</item>
         <item name="android:textSize">12dp</item>
     </style>
+
+    <style name="full_screen_dialog">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
 </resources>

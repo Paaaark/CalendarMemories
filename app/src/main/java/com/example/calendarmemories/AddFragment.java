@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
@@ -101,6 +102,13 @@ public class AddFragment extends DialogFragment {
     }
 
     @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.full_screen_dialog;
+        return dialog;
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
 
@@ -111,7 +119,9 @@ public class AddFragment extends DialogFragment {
         // Set the size of the dialog to match the parent
         Dialog dialog = getDialog();
         if (dialog != null) {
+            System.out.println("Dialog is non-null");
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().getAttributes().windowAnimations = R.style.full_screen_dialog;
         }
         // #TODO: Rounded corners for add fragment
         //dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_border);
@@ -290,6 +300,11 @@ public class AddFragment extends DialogFragment {
             }
         });
     }
+
+//    @Override
+//    public int getTheme() {
+//        return R.style.full_screen_dialog;
+//    }
 
     public void imageSelector() {
         imgUri = getImgUri();

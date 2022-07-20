@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.transition.MaterialFadeThrough;
+import com.google.android.material.transition.MaterialSharedAxis;
 
 import java.util.ArrayList;
 
@@ -54,16 +56,27 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                fragmentManager = getSupportFragmentManager();
-                fragmentTransaction = fragmentManager.beginTransaction();
-                switch (tab.getPosition()) {
-                    case DAILY_TAB:
-                        fragmentTransaction.replace(R.id.mainFragmentContainer, DailyFragment.class, null);
-                        break;
-                    case MONTHLY_TAB:
-                        fragmentTransaction.replace(R.id.mainFragmentContainer, CalendarFragment.class, null);
-                        break;
+                Fragment fragmentOne = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
+                Fragment fragmentTwo;
+                if (fragmentOne instanceof DailyFragment) {
+                    fragmentTwo = new CalendarFragment();
+                } else {
+                    fragmentTwo = new DailyFragment();
                 }
+                fragmentOne.setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
+                fragmentTwo.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
+                fragmentTwo.setAllowEnterTransitionOverlap(true);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction()
+                                .replace(R.id.mainFragmentContainer, fragmentTwo);
+//                switch (tab.getPosition()) {
+//                    case DAILY_TAB:
+//                        fragmentTransaction.replace(R.id.mainFragmentContainer, fragmentTwo);
+//                        break;
+//                    case MONTHLY_TAB:
+//                        fragmentTransaction.replace(R.id.mainFragmentContainer, fragmentTwo);
+//                        break;
+//                }
                 fragmentTransaction.setReorderingAllowed(true)
                         .commit();
             }

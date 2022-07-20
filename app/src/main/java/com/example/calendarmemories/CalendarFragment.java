@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,6 +39,10 @@ import java.util.Map;
 
 public class CalendarFragment extends Fragment {
 
+    private static final int TOTAL_ENTRIES = 42;
+    private static final float DIMMED_TEXT = 0.2f;
+    private static final float NORMAL_TEXT = 1.0f;
+
     private LocalDate date;
     private Button monthBtn, leftMonthBtn, rightMonthBtn;
     private FloatingActionButton floatingBtn;
@@ -50,16 +55,12 @@ public class CalendarFragment extends Fragment {
     Map<String, DailyMemory> dailyMemories;
     private LinearLayout highlightedDay;
 
-    private static final int TOTAL_ENTRIES = 42;
-    private static final float DIMMED_TEXT = 0.2f;
-    private static final float NORMAL_TEXT = 1.0f;
-
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     // #TODO: User authentification
     private static String userDataDir = "userData";
     private String userID = "tempUser";
     private static String foodDir = "foodData";
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public CalendarFragment() {
         weeklyEntries = new ArrayList<LinearLayout>();
