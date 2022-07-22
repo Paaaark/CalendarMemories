@@ -17,6 +17,7 @@ import android.net.Uri;
 
 import java.io.OutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,7 +99,6 @@ public class DailyFragment extends DialogFragment {
     private LinearLayout foodLinearLayout;
     private GridLayout foodCardGridLayout;
     private int currentLayout = R.layout.list_view;
-    private GestureDetectorCompat gestureDetector;
 
     // #TODO: User authentification
     private static String userDataDir = "userData";
@@ -395,6 +395,21 @@ public class DailyFragment extends DialogFragment {
         addFoodToDatabase(food);
     }
 
+    public void updateFood(Food food, LinearLayout container) {
+        ((TextView) container.findViewById(R.id.foodName)).setText(food.getFoodName());
+        ((TextView) container.findViewById(R.id.mealType)).setText(food.getMealType());
+        setTextWithPrefix(container.findViewById(R.id.withWho),
+                DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
+        ((TextView) container.findViewById(R.id.sideNotes)).setText(food.getSideNotes());
+        ImageView imgView = container.findViewById(R.id.imageContainer);
+        Glide.with(getContext()).load(Uri.parse(food.getImageFilePath()))
+                .centerCrop()
+                .apply(new RequestOptions().override(imgView.getWidth()))
+                .into(imgView);
+
+        updateFoodToDatabase(food);
+    }
+
     public static void setTextWithPrefix(TextView textView, String prefix, String suffix) {
         textView.setText(prefix + suffix);
     }
@@ -403,6 +418,7 @@ public class DailyFragment extends DialogFragment {
         DocumentReference userDB = db.document(getDatabasePath());
         Map<String, Object> dataToDelete = new HashMap<String, Object>();
         dataToDelete.put(food.getFoodID(), FieldValue.delete());
+        //dataToDelete.put(getImagePathsKey(food), FieldValue.delete());
         userDB.update(dataToDelete)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -426,6 +442,7 @@ public class DailyFragment extends DialogFragment {
         Map<String, Object> dataToAdd = new HashMap<String, Object>();
         dataToAdd.put(DailyMemory.NUM_FOOD_KEY, dailyMemory.getNumFood());
         dataToAdd.put(DailyMemory.ID_TEMPLATE_KEY, dailyMemory.getIDTemplate());
+        //dataToAdd.put(getImagePathsKey(food), food.getImageFilePaths());
         dataToAdd.put(food.getFoodID(), food);
         userDB.set(dataToAdd, SetOptions.merge())
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -448,6 +465,7 @@ public class DailyFragment extends DialogFragment {
         DocumentReference userDB = db.document(getDatabasePath());
         Map<String, Object> dataToModify = new HashMap<String, Object>();
         dataToModify.put(food.getFoodID(), food);
+        //dataToModify.put(getImagePathsKey(food), food.getImageFilePaths());
         userDB.update(dataToModify)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -502,31 +520,7 @@ public class DailyFragment extends DialogFragment {
         return builder;
     }
 
-    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "gesture";
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-        @Override
-        public boolean onDown(MotionEvent event) {
-            System.out.println("onDown Detected");
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2,
-                               float velocityX, float velocityY) {
-            System.out.println("onFling activated in dialog");
-            float diffY = e2.getY() - e1.getY();
-            float diffX = e2.getX() - e1.getX();
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
-                    if (diffX > 0) {
-                    } else {
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
+    private String getImagePathsKey(Food food) {
+        return food.getFoodID() + "Images";
     }
 }

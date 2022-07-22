@@ -209,6 +209,7 @@ public class CalendarFragment extends Fragment {
             for (int i = 0; i < dailyMemory.getNumFood(); i++) {
                 dayLayout.addView(getTextView(dailyMemory.getFoodAt(i).getFoodName()));
             }
+            return;
         }
         // Otherwise, get the data
         DocumentReference userDB = db.document(getDatabasePath(date));

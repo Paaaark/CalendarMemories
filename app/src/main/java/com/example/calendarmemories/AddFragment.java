@@ -45,6 +45,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.sql.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,15 +62,15 @@ public class AddFragment extends DialogFragment {
     private TextView todaysDate;
     private CircularProgressIndicator circularProgressIndicator;
     private AutoCompleteTextView mealTypeInput;
-    private ImageView foodImgView;
     private Uri imgUri = null;
     private boolean editingFood = false;
     private boolean imgViewFlag = true;
     private boolean fromCalendar = false;
-    private LinearLayout container;
+    private LinearLayout container, foodImgContainer;
     private Food food;
     private String foodID;
     private LocalDate date;
+    private ArrayList<Uri> images;
 
     public static String TAG = "AddDialogFragment";
     private static final String IMAGE_PICKER_TITLE = "Select an image";
@@ -84,6 +85,8 @@ public class AddFragment extends DialogFragment {
     public AddFragment(String foodID) {
         super(R.layout.fragment_add);
         this.foodID = foodID;
+        this.food = new Food(foodID);
+        this.images = new ArrayList<Uri>();
     }
 
     public AddFragment(Food food, LinearLayout container, String foodID) {
@@ -92,6 +95,7 @@ public class AddFragment extends DialogFragment {
         this.container = container;
         this.foodID = foodID;
         food.setFoodID(foodID);
+        this.images = stringToUri(food.getImageFilePaths());
         editingFood = true;
     }
 
@@ -99,6 +103,7 @@ public class AddFragment extends DialogFragment {
         super(R.layout.fragment_add);
         this.date = date;
         this.fromCalendar = true;
+        this.images = new ArrayList<Uri>();
     }
 
     @Override
@@ -120,8 +125,9 @@ public class AddFragment extends DialogFragment {
         Dialog dialog = getDialog();
         if (dialog != null) {
             System.out.println("Dialog is non-null");
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            dialog.getWindow().getAttributes().windowAnimations = R.style.full_screen_dialog;
+            int width = (int) (getResources().getDisplayMetrics().widthPixels*0.85);
+            int height = (int) (getResources().getDisplayMetrics().heightPixels*0.65);
+            dialog.getWindow().setLayout(width, height);
         }
         // #TODO: Rounded corners for add fragment
         //dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_border);
@@ -137,7 +143,7 @@ public class AddFragment extends DialogFragment {
         withWhoInputText = getView().findViewById(R.id.withWhoInputText);
         sideNotesInputText = getView().findViewById(R.id.sideNotesInputText);
         mealTypeInput = getView().findViewById(R.id.autoCompleteMealType);
-        foodImgView = getView().findViewById(R.id.foodImgView);
+        foodImgContainer = getView().findViewById(R.id.foodImgContainer);
         circularProgressIndicator = getView().findViewById(R.id.circularProgressIndicator);
         todaysDate = getView().findViewById(R.id.todaysDate);
 
@@ -174,16 +180,17 @@ public class AddFragment extends DialogFragment {
 
         // If we are in editing mode, initialize the texts into the textViews
         if (editingFood) {
-            ViewTreeObserver viewTreeObserver = foodImgView.getViewTreeObserver();
+            // #TODO: Images should be added differently
+            ViewTreeObserver viewTreeObserver = foodImgContainer.getViewTreeObserver();
             viewTreeObserver
                     .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
                             if (food.getImageFilePath() != null && imgViewFlag) {
-                                putImageInView(food.getImageFilePath(), foodImgView.getWidth(), foodImgView);
+                                putImageInView(food.getImageFilePath(), foodImgContainer);
                                 imgViewFlag = false;
                             }
-                            foodImgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            foodImgContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         }
                     });
             foodInputText.setText(food.getFoodName());
@@ -192,49 +199,26 @@ public class AddFragment extends DialogFragment {
             mealTypeInput.setText(food.getMealType(), false);
         }
 
-        // #TODO: Add button actions
         addConfirmBtn = getView().findViewById(R.id.addConfirmBtn);
         addConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                food.setFoodName(foodInputText.getText().toString());
+                food.setMealType(mealTypeInput.getText().toString());
+                food.setWithWho(withWhoInputText.getText().toString());
+                food.setSideNotes(sideNotesInputText.getText().toString());
+                food.setImageFilePaths(uriToString(images));
 
                 // Adding a new entry of food
                 if (!editingFood) {
-                    String foodName = foodInputText.getText().toString();
-                    String mealType = mealTypeInput.getText().toString();
-                    String withWho = withWhoInputText.getText().toString();
-                    String sideNotes = sideNotesInputText.getText().toString();
-                    Food food;
-                    if (imgUri == null) {
-                        food = new Food(null, foodName, mealType, withWho, sideNotes);
-                    } else {
-                        food = new Food(imgUri.toString(), foodName, mealType, withWho, sideNotes);
-                    }
-                    food.setFoodID(foodID);
-                    System.out.println("*****Parent: " + getParentFragment());
                     if (getParentFragment() instanceof DailyFragment) {
                         ((DailyFragment) getParentFragment()).addFood(food);
                     } else if (getParentFragment() instanceof CalendarFragment) {
-                        // #TODO: Calendar fragment add food
                         ((CalendarFragment) getParentFragment()).addFood(food, date);
                     }
                 } else {
                     // Modifying an existing entry
-                    if (imgUri != null) {
-                        food.setImageFilePath(imgUri.toString());
-                    }
-                    food.setFoodName(foodInputText.getText().toString());
-                    food.setMealType(mealTypeInput.getText().toString());
-                    food.setWithWho(withWhoInputText.getText().toString());
-                    food.setSideNotes(sideNotesInputText.getText().toString());
-                    ((TextView) container.findViewById(R.id.foodName)).setText(food.getFoodName());
-                    ((TextView) container.findViewById(R.id.mealType)).setText(food.getMealType());
-                    DailyFragment.setTextWithPrefix(container.findViewById(R.id.withWho),
-                            DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
-                    ((TextView) container.findViewById(R.id.sideNotes)).setText(food.getSideNotes());
-                    ImageView imageView = container.findViewById(R.id.imageContainer);
-                    putImageInView(food.getImageFilePath(), imageView.getWidth(), imageView);
-                    ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
+                    ((DailyFragment) getParentFragment()).updateFood(food, container);
                 }
                 dismiss();
             }
@@ -268,14 +252,8 @@ public class AddFragment extends DialogFragment {
                 showTwoOptionsAlertDialogBuilder();
             }
         });
-        foodImgView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showTwoOptionsAlertDialogBuilder();
-            }
-        });
 
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
@@ -330,39 +308,70 @@ public class AddFragment extends DialogFragment {
                         if (intent == null) {
                             Uri selectedImageUri = imgUri;
                             System.out.println("Uri: " + selectedImageUri.toString());
-                            int width = foodImgView.getWidth();
-                            putImageInView(selectedImageUri, width, foodImgView);
+                            int width = foodImgContainer.getHeight();
+                            putImageInView(selectedImageUri, foodImgContainer);
+                            images.add(selectedImageUri);
                         } else if (intent != null && intent.getData() != null) {
                             Uri selectedImageUri = intent.getData();
                             System.out.println("Selected img uri path: " + selectedImageUri.getPath());
-                            int width = foodImgView.getWidth();
-                            putImageInView(selectedImageUri, width, foodImgView);
+                            int width = foodImgContainer.getWidth();
+                            putImageInView(selectedImageUri, foodImgContainer);
                             // #TODO: Food image icon to have a certain color
                             imgUri = selectedImageUri;
+                            images.add(selectedImageUri);
                         }
                     }
                 }
             });
 
-    private int getImageHeight(int width) {
-        return (int) (width * 9.0 / 16.0);
-    }
-
-    private void putImageInView(String imageFilePath, int maxSide, ImageView view) {
+    private void putImageInView(String imageFilePath, LinearLayout view) {
         if (imageFilePath == null) return;
         Uri imgUri = Uri.parse(imageFilePath);
-        putImageInView(imgUri, maxSide, view);
+        putImageInView(imgUri, view);
     }
 
-    private void putImageInView(Uri imgUri, int maxSide, ImageView view) {
+    private void putImageInView(Uri imgUri, LinearLayout container) {
         if (imgUri == null) return;
-        int size[] = getImgSize(imgUri, maxSide);
+        ImageView imgView = new ImageView(getContext());
+        imgView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        container.addView(imgView);
+        putImageInView(imgUri, container.getHeight(), imgView);
+
+        imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getAlertDialogBuilder(R.string.image_delete_alert_title, R.string.image_delete_alert_msg)
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {  }
+                        })
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                container.removeView(imgView);
+                                images.remove(imgUri);
+                            }
+                        })
+                        .show();
+            }
+        });
+    }
+
+    private void putImageInView(Uri imgUri, int sides, ImageView imgView) {
+        if (imgUri == null) return;
         Glide.with(getContext()).load(imgUri)
                 .centerCrop()
-                .apply(new RequestOptions().override(size[WIDTH], size[HEIGHT]))
-                .into(view);
+                .apply(new RequestOptions().override(sides))
+                .into(imgView);
     }
 
+    /**
+     * Computes image sizes based on the original image size and max side length
+     * @param imageUri
+     * @param maxSide
+     * @return
+     */
     private int[] getImgSize(Uri imageUri, int maxSide) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -388,6 +397,12 @@ public class AddFragment extends DialogFragment {
         return size;
     }
 
+    /**
+     * Returns a dialog builder with given titleRes and msgRes
+     * @param titleRes
+     * @param msgRes
+     * @return
+     */
     private MaterialAlertDialogBuilder getAlertDialogBuilder(int titleRes, int msgRes) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
                 .setTitle(titleRes)
@@ -395,6 +410,9 @@ public class AddFragment extends DialogFragment {
         return builder;
     }
 
+    /**
+     * Shows a dialog with TAKE_PICTURE and SELECT_PICTURE option
+     */
     private void showTwoOptionsAlertDialogBuilder() {
         // #TODO: String array adapting
         String[] takeOrSelect = getResources().getStringArray(R.array.takeOrSelect);
@@ -439,7 +457,7 @@ public class AddFragment extends DialogFragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ContentResolver resolver = getContext().getContentResolver();
             ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, foodID);
+            contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, food.getImageID());
             contentValues.put(MediaStore.MediaColumns.MIME_TYPE, MIME_TYPE);
             contentValues.put(
                     MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + foodID);
@@ -449,5 +467,33 @@ public class AddFragment extends DialogFragment {
                     Environment.DIRECTORY_PICTURES).toString() + File.separator + foodID);
             return Uri.fromFile(imagesDir);
         }
+    }
+
+    /**
+     * Converts an ArrayList of Uri to an ArrayList of Strings using Uri.toString() method
+     * @param images
+     * @return
+     */
+    private ArrayList<String> uriToString(ArrayList<Uri> images) {
+        if (images == null) return new ArrayList<String>();
+        ArrayList<String> target = new ArrayList<String>();
+        for (Uri uri: images) {
+            target.add(uri.toString());
+        }
+        return target;
+    }
+
+    /**
+     * Converts an ArrayList of Strings to an ArrayList of strings using Uri.parse() method
+     * @param images
+     * @return
+     */
+    private ArrayList<Uri> stringToUri(ArrayList<String> images) {
+        if (images == null) return new ArrayList<Uri>();
+        ArrayList<Uri> target = new ArrayList<Uri>();
+        for (String str: images) {
+            target.add(Uri.parse(str));
+        }
+        return target;
     }
 }

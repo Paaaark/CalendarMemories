@@ -28,6 +28,8 @@
     <string name="modify_failed_msg">Failed to modify. Please try again.</string>
     <string name="back_button_alert_title">Cancel changes?</string>
     <string name="back_button_alert_msg">Changes you made will not be saved.</string>
+    <string name="image_delete_alert_title">Delete image?</string>
+    <string name="image_delete_alert_msg">Delete this image from the food entry. You may add it back any time.</string>
     <!-- #TODO: Change the food_delete_msg -->
     <string name="food_deleted_msg">Food entry deleted.</string>
 </resources>

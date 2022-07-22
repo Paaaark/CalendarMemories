@@ -47,9 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp">
+                android:gravity="center">
                 <Button
                     android:id="@+id/cardEditBtn"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
