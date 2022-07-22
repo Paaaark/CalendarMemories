@@ -61,17 +61,19 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/minimal_blue">
+                android:background="@color/minimal_blue_dark">
                 <TextView
                     android:id="@+id/foodText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Food"
-                    android:layout_marginLeft="10dp"
+                    android:paddingLeft="10dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    style="@style/CategoryText"/>
+                    android:textSize="20dp"
+                    android:textColor="@color/black"
+                    android:letterSpacing="0.1"/>
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

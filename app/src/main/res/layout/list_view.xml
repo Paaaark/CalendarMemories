@@ -14,7 +14,9 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="0dp">
+            app:cardElevation="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -22,7 +24,7 @@
                 <ImageView
                     android:id="@+id/imageContainer"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="0.35"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_food_sign"/>
@@ -38,13 +40,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="foodName"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/food_name_text_size" />
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/food_name_text_size"
+                        android:textAllCaps="true"/>
                     <TextView
                         android:id="@+id/mealType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="mealType"
+                        android:textColor="@color/grayA"
                         android:textSize="@dimen/meal_type_text_size"/>
                     <TextView
                         android:id="@+id/withWho"
@@ -55,43 +59,46 @@
                         android:id="@+id/sideNotes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=""/>
+                        android:text="SideNotes"/>
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="48dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_weight="0.3">
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/cardEditBtn"
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         app:strokeColor="@color/minimal_pink"
                         app:strokeWidth="1dp"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:minWidth="48dp"
-                        android:minHeight="48dp"
+                        app:iconPadding="0dp"
+                        app:iconGravity="textStart"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         app:icon="@drawable/ic_edit_icon"/>
-                    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/cardDeleteBtn"
-                        xmlns:app="http://schemas.android.com/apk/res-auto"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         app:strokeColor="@color/minimal_pink"
                         app:strokeWidth="1dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
                         android:layout_width="wrap_content"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:minWidth="48dp"
-                        android:minHeight="48dp"
+                        android:layout_weight="1"
+                        app:iconPadding="0dp"
+                        app:iconGravity="textStart"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         app:icon="@drawable/ic_delete_icon"/>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
     </LinearLayout>
 </LinearLayout>

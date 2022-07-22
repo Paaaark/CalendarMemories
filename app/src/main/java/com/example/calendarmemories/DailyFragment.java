@@ -129,13 +129,6 @@ public class DailyFragment extends DialogFragment {
             int width = (int) (getResources().getDisplayMetrics().widthPixels*0.85);
             int height = (int) (getResources().getDisplayMetrics().heightPixels*0.65);
             dialog.getWindow().setLayout(width, height);
-            dialog.getWindow().getDecorView().setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    System.out.println("Fragment Touched");
-                    return true;
-                }
-            });
         }
     }
 

@@ -17,7 +17,6 @@
     </style>
 
     <style name="CategoryText" parent="Widget.MaterialComponents.TextView">
-        <item name="android:background">?attr/colorSecondary</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20dp</item>
     </style>

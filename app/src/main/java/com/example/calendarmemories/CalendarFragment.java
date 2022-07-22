@@ -191,7 +191,7 @@ public class CalendarFragment extends Fragment {
         if (date.getDayOfWeek() == DayOfWeek.SUNDAY) {
             textView.setTextColor(getResources().getColor(R.color.red, getContext().getTheme()));
         } else if (date.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            textView.setTextColor(getResources().getColor(R.color.blue, getContext().getTheme()));
+            textView.setTextColor(getResources().getColor(R.color.light_blue_A200, getContext().getTheme()));
         }
         if (dim) {
             textView.setAlpha(DIMMED_TEXT);

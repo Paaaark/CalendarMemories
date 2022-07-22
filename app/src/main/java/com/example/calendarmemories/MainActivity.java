@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         super.dispatchTouchEvent(event);
+        System.out.println("Hello1");
         return gestureDetector.onTouchEvent(event);
     }
 

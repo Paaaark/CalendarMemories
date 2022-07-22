@@ -24,13 +24,15 @@
                 android:layout_height="wrap_content"
                 android:text="foodName"
                 android:textSize="@dimen/food_name_text_size"
-                android:textStyle="bold"/>
+                android:textColor="@color/black"
+                android:textAllCaps="true"/>
             <TextView
                 android:id="@+id/mealType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="mealType"
-                android:textSize="@dimen/meal_type_text_size"/>
+                android:textSize="@dimen/meal_type_text_size"
+                android:textColor="@color/grayA"/>
             <TextView
                 android:id="@+id/withWho"
                 android:layout_width="match_parent"
