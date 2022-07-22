@@ -43,6 +43,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -95,7 +96,9 @@ public class DailyFragment extends DialogFragment {
     private File currentFile = null;
     private DailyMemory dailyMemory;
     private LinearLayout foodLinearLayout;
-    private boolean fromCalendar = false;
+    private GridLayout foodCardGridLayout;
+    private int currentLayout = R.layout.list_view;
+    private GestureDetectorCompat gestureDetector;
 
     // #TODO: User authentification
     private static String userDataDir = "userData";
@@ -108,9 +111,14 @@ public class DailyFragment extends DialogFragment {
         super(R.layout.fragment_daily);
     }
 
-    public DailyFragment(boolean fromCalendar) {
+    public DailyFragment(LocalDate date) {
         super(R.layout.fragment_daily);
-        this.fromCalendar = fromCalendar;
+        this.date = date;
+    }
+
+    public DailyFragment(int currentLayout) {
+        super(R.layout.fragment_daily);
+        this.currentLayout = currentLayout;
     }
 
     @Override
@@ -118,9 +126,16 @@ public class DailyFragment extends DialogFragment {
         super.onStart();
         Dialog dialog = getDialog();
         if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            int width = (int) (getResources().getDisplayMetrics().widthPixels*0.85);
+            int height = (int) (getResources().getDisplayMetrics().heightPixels*0.65);
             dialog.getWindow().setLayout(width, height);
+            dialog.getWindow().getDecorView().setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    System.out.println("Fragment Touched");
+                    return true;
+                }
+            });
         }
     }
 
@@ -141,9 +156,12 @@ public class DailyFragment extends DialogFragment {
 
         constraintLayout = v.findViewById(R.id.constraintLayout);
         foodLinearLayout = v.findViewById(R.id.foodLinearLayout);
+        foodCardGridLayout = v.findViewById(R.id.foodCardGridLayout);
 
         // #TODO: Start panel
-        date = Time.getTodaysDate();
+        if (date == null) {
+            date = Time.getTodaysDate();
+        }
         getDailyMemory();
 
         dailyDateBtn = v.findViewById(R.id.dailyDateBtn);
@@ -209,6 +227,8 @@ public class DailyFragment extends DialogFragment {
                 listViewToggleBtn.setSelected(true);
                 galleryViewToggleBtn.setSelected(false);
                 // #TODO: View toggle
+                currentLayout = R.layout.list_view;
+                updatePanel();
             }
         });
         galleryViewToggleBtn.setOnClickListener(new View.OnClickListener() {
@@ -216,6 +236,8 @@ public class DailyFragment extends DialogFragment {
             public void onClick(View view) {
                 listViewToggleBtn.setSelected(false);
                 galleryViewToggleBtn.setSelected(true);
+                currentLayout = R.layout.gallery_view;
+                updatePanel();
             }
         });
         return v;
@@ -270,117 +292,40 @@ public class DailyFragment extends DialogFragment {
     public void updatePanel() {
         // #TODO: updatePanel causes the app to crash
         // Remove all previous views in the panel
-        for (int i = foodLinearLayout.getChildCount() - 1; i > 0; i--) {
-            foodLinearLayout.removeViewAt(i);
+        for (int i = foodCardGridLayout.getChildCount() - 1; i >= 0; i--) {
+            foodCardGridLayout.removeViewAt(i);
+        }
+        if (currentLayout == R.layout.list_view) {
+            foodCardGridLayout.setColumnCount(1);
+        } else {
+            foodCardGridLayout.setColumnCount(2);
         }
         // Add views in the panel
         for (int i = 0; i < dailyMemory.getNumFood(); i++) {
             Food food = dailyMemory.getFoodAt(i);
-            foodLinearLayout.addView(getCardListView(food));
+            foodCardGridLayout.addView(getCard(food));
             // #TODO: Finish up creating a card for foods
         }
     }
 
-    @Deprecated
-    public void updatePanelDebug() {
-        System.out.println("MyDebug" + foodLinearLayout.getChildCount());
-    }
+    public LinearLayout getCard(Food food) {
+        LinearLayout container = (LinearLayout) getLayoutInflater().inflate(currentLayout, null);
 
-    @Deprecated
-    public LinearLayout getCardListViewDeprecated(Food food) {
-        LinearLayout container = new LinearLayout(getContext());
-        container.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
-        container.setOrientation(LinearLayout.VERTICAL);
+        if (currentLayout == R.layout.gallery_view) {
+            // #TODO: height should probably be different
+            System.out.println("Current layout is gallery_view");
+            container.setLayoutParams(new LinearLayout.LayoutParams(foodLinearLayout.getWidth() / 2,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+        }
 
-        LinearLayout.LayoutParams layoutParamMPWC = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        LinearLayout.LayoutParams layoutParam0dpWC = new LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-        MaterialCardView card = new MaterialCardView(getContext());
-        card.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
-        LinearLayout cardSubLL = new LinearLayout(getContext());
-        cardSubLL.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
-        cardSubLL.setOrientation(LinearLayout.HORIZONTAL);
-        cardSubLL.setGravity(Gravity.CENTER_VERTICAL);
+        ImageView imgView = container.findViewById(R.id.imageContainer);
 
-        // Creates an imageview holder
-        layoutParam0dpWC.weight = FOOD_IMAGE_WEIGHT;
-        ImageView foodImg = new ImageView(getContext());
-        foodImg.setLayoutParams(getLayoutParams(0, WRAP_CONTENT, FOOD_IMAGE_WEIGHT));
-        foodImg.setImageResource(R.drawable.ic_food_sign);
-
-        // Creates a subsub layout and add textViews to it
-        LinearLayout subsubLL = new LinearLayout(getContext());
-        subsubLL.setLayoutParams(getLayoutParams(0, WRAP_CONTENT, FOOD_TEXT_WEIGHT));
-        subsubLL.setOrientation(LinearLayout.VERTICAL);
-        TextView foodNameText = getTextView(getContext(), layoutParamMPWC, food.getFoodName());
-        foodNameText.setTypeface(Typeface.DEFAULT_BOLD);
-        foodNameText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, FOOD_NAME_TEXT_SIZE);
-        TextView mealTypeText = getTextView(getContext(), layoutParamMPWC, food.getMealType());
-        mealTypeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, MEAL_TYPE_TEXT_SIZE);
-        TextView withWhoText = getTextView(getContext(), layoutParamMPWC, food.getWithWho());
-        TextView sideNotesText = getTextView(getContext(), layoutParamMPWC, food.getSideNotes());
-
-        // Create a deletebtn
-        layoutParam0dpWC.weight = 1f;
-        LinearLayout btnLL = new LinearLayout(getContext());
-        btnLL.setLayoutParams(getLayoutParams(WRAP_CONTENT, WRAP_CONTENT, 0));
-        btnLL.setOrientation(LinearLayout.VERTICAL);
-        Button deleteBtn = (Button) getLayoutInflater().inflate(R.layout.custom_button_layout, null);
-        deleteBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_delete_icon, 0, 0, 0);
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("Delete btn clicked");
-                foodLinearLayout.removeView(container);
-                deleteFoodFromDatabase(food);
-            }
-        });
-        Button editBtn = (Button) getLayoutInflater().inflate(R.layout.custom_button_layout, null);
-        editBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_edit_icon, 0, 0, 0);
-        editBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // #TODO: Edit btn click response
-            }
-        });
-
-        MaterialDivider materialDivider = new MaterialDivider(getContext());
-        materialDivider.setLayoutParams(getLayoutParams(MATCH_PARENT, WRAP_CONTENT, 0));
-
-        btnLL.addView(editBtn);
-        btnLL.addView(deleteBtn);
-
-        subsubLL.addView(foodNameText);
-        subsubLL.addView(mealTypeText);
-        subsubLL.addView(withWhoText);
-        subsubLL.addView(sideNotesText);
-
-        cardSubLL.addView(foodImg);
-        cardSubLL.addView(subsubLL);
-        cardSubLL.addView(btnLL);
-
-        card.addView(cardSubLL);
-
-        container.addView(card);
-        container.addView(materialDivider);
-
-        return container;
-    }
-
-    public LinearLayout getCardListView(Food food) {
-        LinearLayout container = (LinearLayout) getLayoutInflater().inflate(R.layout.list_view_test, null);
-        ImageView imgView = container.findViewById(R.id.listCardImageContainer);
-
-        ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
-        ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
-        setTextWithPrefix(container.findViewById(R.id.listCardWithWhoTxt), WITH_WHO_TEXT_PREFIX,
+        ((TextView) container.findViewById(R.id.foodName)).setText(food.getFoodName());
+        ((TextView) container.findViewById(R.id.mealType)).setText(food.getMealType());
+        setTextWithPrefix(container.findViewById(R.id.withWho), WITH_WHO_TEXT_PREFIX,
                 food.getWithWho());
-        ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
-        Button deleteBtn = container.findViewById(R.id.listCardDeleteBtn);
+        ((TextView) container.findViewById(R.id.sideNotes)).setText(food.getSideNotes());
+        Button deleteBtn = container.findViewById(R.id.cardDeleteBtn);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -389,9 +334,9 @@ public class DailyFragment extends DialogFragment {
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                foodLinearLayout.removeView(container);
+                                foodCardGridLayout.removeView(container);
                                 deleteFoodFromDatabase(food);
-                                ViewHelper.getSnackbar(foodLinearLayout, R.string.food_deleted_msg,
+                                ViewHelper.getSnackbar(foodCardGridLayout, R.string.food_deleted_msg,
                                         Snackbar.LENGTH_SHORT, floatingBtn).show();
                             }
                         })
@@ -402,7 +347,7 @@ public class DailyFragment extends DialogFragment {
                         .show();
             }
         });
-        Button editBtn = container.findViewById(R.id.listCardEditBtn);
+        Button editBtn = container.findViewById(R.id.cardEditBtn);
         editBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -418,8 +363,13 @@ public class DailyFragment extends DialogFragment {
                 .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
+                        if (currentLayout == R.layout.gallery_view) {
+                            imgView.setLayoutParams(new LinearLayout.LayoutParams(imgView.getWidth(),
+                                    imgView.getWidth()));
+                        }
                         if (food.getImageFilePath() != null) {
                             Uri imageUri = Uri.parse(food.getImageFilePath());
+                            File file = new File(imageUri.getPath());
                             Glide.with(getContext()).load(imageUri)
                                     .centerCrop()
                                     .apply(new RequestOptions().override(imgView.getWidth()))
@@ -448,7 +398,7 @@ public class DailyFragment extends DialogFragment {
     public void addFood(Food food) {
         dailyMemory.addFood(food);
 
-        foodLinearLayout.addView(getCardListView(food));
+        foodCardGridLayout.addView(getCard(food));
         addFoodToDatabase(food);
     }
 
@@ -488,14 +438,14 @@ public class DailyFragment extends DialogFragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        ViewHelper.getSnackbar(foodLinearLayout, R.string.add_success_msg,
+                        ViewHelper.getSnackbar(foodCardGridLayout, R.string.add_success_msg,
                                 Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ViewHelper.getSnackbar(foodLinearLayout, R.string.add_failed_msg,
+                        ViewHelper.getSnackbar(foodCardGridLayout, R.string.add_failed_msg,
                                 Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
@@ -509,14 +459,14 @@ public class DailyFragment extends DialogFragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        ViewHelper.getSnackbar(foodLinearLayout, R.string.modify_success_msg,
+                        ViewHelper.getSnackbar(foodCardGridLayout, R.string.modify_success_msg,
                                 Snackbar.LENGTH_SHORT, floatingBtn).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ViewHelper.getSnackbar(foodLinearLayout, R.string.modify_failed_msg,
+                        ViewHelper.getSnackbar(foodCardGridLayout, R.string.modify_failed_msg,
                                 Snackbar.LENGTH_LONG, floatingBtn).show();
                     }
                 });
@@ -559,11 +509,31 @@ public class DailyFragment extends DialogFragment {
         return builder;
     }
 
-    private Snackbar getSnackbar(View v, int msgRes, int duration, View anchor) {
-        if (anchor == null) {
-            return Snackbar.make(v, msgRes, duration);
-        } else {
-            return Snackbar.make(v, msgRes, duration).setAnchorView(anchor);
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String DEBUG_TAG = "gesture";
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        @Override
+        public boolean onDown(MotionEvent event) {
+            System.out.println("onDown Detected");
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY) {
+            System.out.println("onFling activated in dialog");
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffX > 0) {
+                    } else {
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

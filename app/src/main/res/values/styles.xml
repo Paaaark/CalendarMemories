@@ -30,11 +30,11 @@
         <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_marginEnd">5dp</item>
     </style>
-    <style name="calendar_food_entry">
+    <style name="TextAppearance.AppCompat.calendar_food_entry" parent="TextAppearance.AppCompat">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:ellipsize">end</item>
         <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:textSize">12dp</item>
     </style>
 

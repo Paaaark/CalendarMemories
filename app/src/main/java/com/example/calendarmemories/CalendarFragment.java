@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
@@ -129,7 +130,8 @@ public class CalendarFragment extends Fragment {
                 public void onClick(View view) {
                     if (highlightedDay == day) {
                         // #TODO: set the date of dailyFragment to selected date
-                        DailyFragment myDailyFragment = new DailyFragment(true);
+                        LocalDate target = Time.decodeID(highlightedDay.getTag().toString());
+                        DailyFragment myDailyFragment = new DailyFragment(target);
                         myDailyFragment.show(
                                 getChildFragmentManager(), DailyFragment.TAG
                         );
@@ -230,8 +232,11 @@ public class CalendarFragment extends Fragment {
 
     private TextView getTextView(String text) {
         TextView textView = new TextView(getContext());
-        textView.setTextAppearance(R.style.calendar_food_entry);
         textView.setText(text);
+        textView.setTextAppearance(R.style.TextAppearance_AppCompat_calendar_food_entry);
+        textView.setMaxLines(1);
+        textView.setEllipsize(TextUtils.TruncateAt.END);
+        //textView.setTextAppearance(R.style.calendar_food_entry);
         return textView;
     }
 

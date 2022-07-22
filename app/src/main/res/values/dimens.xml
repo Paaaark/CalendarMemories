@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="border_width">1.5dip</dimen>
+    <dimen name="food_name_text_size">18dp</dimen>
+    <dimen name="meal_type_text_size">10dp</dimen>
 </resources>

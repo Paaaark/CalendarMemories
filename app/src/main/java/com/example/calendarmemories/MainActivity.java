@@ -26,12 +26,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int DAILY_TAB = 0;
     public static final int MONTHLY_TAB = 1;
 
-    LinearLayoutCompat mainConstraintLayout;
-    TabLayout tabLayout;
-    FragmentContainerView fragmentContainerView;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
-    GestureDetectorCompat gestureDetector;
+    private LinearLayoutCompat mainConstraintLayout;
+    private TabLayout tabLayout;
+    private FragmentContainerView fragmentContainerView;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private GestureDetectorCompat gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     fragmentTwo = new DailyFragment();
                 }
-                fragmentOne.setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
-                fragmentTwo.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
-                fragmentTwo.setAllowEnterTransitionOverlap(true);
+                //fragmentOne.setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
+                //fragmentTwo.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
+                //fragmentTwo.setAllowEnterTransitionOverlap(true);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction()
                                 .replace(R.id.mainFragmentContainer, fragmentTwo);

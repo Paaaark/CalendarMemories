@@ -13,13 +13,14 @@
         android:paddingRight="5dp">
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
-                    android:id="@+id/listCardImageContainer"
+                    android:id="@+id/imageContainer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.35"
@@ -33,25 +34,25 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp">
                     <TextView
-                        android:id="@+id/listCardFoodNameTxt"
+                        android:id="@+id/foodName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="foodName"
                         android:textStyle="bold"
-                        android:textSize="18dp" />
+                        android:textSize="@dimen/food_name_text_size" />
                     <TextView
-                        android:id="@+id/listCardMealTypeTxt"
+                        android:id="@+id/mealType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="mealType"
-                        android:textSize="10dp"/>
+                        android:textSize="@dimen/meal_type_text_size"/>
                     <TextView
-                        android:id="@+id/listCardWithWhoTxt"
+                        android:id="@+id/withWho"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="With: withWho"/>
                     <TextView
-                        android:id="@+id/listCardSideNotesTxt"
+                        android:id="@+id/sideNotes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""/>
@@ -61,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/listCardEditBtn"
+                        android:id="@+id/cardEditBtn"
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         app:strokeColor="@color/minimal_pink"
@@ -74,7 +75,7 @@
                         android:minHeight="48dp"
                         app:icon="@drawable/ic_edit_icon"/>
                     <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/listCardDeleteBtn"
+                        android:id="@+id/cardDeleteBtn"
                         xmlns:app="http://schemas.android.com/apk/res-auto"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         app:strokeColor="@color/minimal_pink"

@@ -227,12 +227,12 @@ public class AddFragment extends DialogFragment {
                     food.setMealType(mealTypeInput.getText().toString());
                     food.setWithWho(withWhoInputText.getText().toString());
                     food.setSideNotes(sideNotesInputText.getText().toString());
-                    ((TextView) container.findViewById(R.id.listCardFoodNameTxt)).setText(food.getFoodName());
-                    ((TextView) container.findViewById(R.id.listCardMealTypeTxt)).setText(food.getMealType());
-                    DailyFragment.setTextWithPrefix(container.findViewById(R.id.listCardWithWhoTxt),
+                    ((TextView) container.findViewById(R.id.foodName)).setText(food.getFoodName());
+                    ((TextView) container.findViewById(R.id.mealType)).setText(food.getMealType());
+                    DailyFragment.setTextWithPrefix(container.findViewById(R.id.withWho),
                             DailyFragment.WITH_WHO_TEXT_PREFIX, food.getWithWho());
-                    ((TextView) container.findViewById(R.id.listCardSideNotesTxt)).setText(food.getSideNotes());
-                    ImageView imageView = container.findViewById(R.id.listCardImageContainer);
+                    ((TextView) container.findViewById(R.id.sideNotes)).setText(food.getSideNotes());
+                    ImageView imageView = container.findViewById(R.id.imageContainer);
                     putImageInView(food.getImageFilePath(), imageView.getWidth(), imageView);
                     ((DailyFragment) getParentFragment()).updateFoodToDatabase(food);
                 }
