@@ -2,10 +2,7 @@
     <string name="app_name">CalendarMemories</string>
     <string name="tab_item_label_1">Daily</string>
     <string name="tab_item_label_2">Monthly</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="tab_item_label_3">Settings</string>
     <string-array name="mealTypesArray">
         <item>Breakfast</item>
         <item>Brunch</item>
@@ -17,8 +14,18 @@
         <item>Take a photo</item>
         <item>Select from gallery</item>
     </string-array>
+    <string-array name="dailyFragmentViewOptions">
+        <item>List view</item>
+        <item>Gallery view</item>
+    </string-array>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="add">Add</string>
+    <string name="apply">Apply</string>
+    <string name="yes_apply">Yes, apply</string>
+    <string name="no_apply">No, do not apply</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="continue_editing">Continue editing</string>
     <string name="delete_alert_title">Delete food entry?</string>
     <string name="delete_alert_msg">You will not be able to retrieve it permanently.</string>
@@ -30,6 +37,11 @@
     <string name="back_button_alert_msg">Changes you made will not be saved.</string>
     <string name="image_delete_alert_title">Delete image?</string>
     <string name="image_delete_alert_msg">Delete this image from the food entry. You may add it back any time.</string>
+    <string name="apply_changes_title">Apply changes to your setting?</string>
+    <string name="exit_app_title">Exit application?</string>
     <!-- #TODO: Change the food_delete_msg -->
     <string name="food_deleted_msg">Food entry deleted.</string>
+
+    <!-- Keys used to save user settings via SharedPreferences -->
+    <string name="saved_daily_view_setting_key">daily_view_setting_key</string>
 </resources>

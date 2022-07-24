@@ -1,11 +1,9 @@
 package com.example.calendarmemories;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
@@ -21,12 +19,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -44,8 +41,6 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.sql.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -127,14 +122,16 @@ public class AddFragment extends DialogFragment {
             System.out.println("Dialog is non-null");
             int width = (int) (getResources().getDisplayMetrics().widthPixels*0.85);
             int height = (int) (getResources().getDisplayMetrics().heightPixels*0.65);
-            dialog.getWindow().setLayout(width, height);
+            //dialog.getWindow().setLayout(width, height);
+            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
         }
         // #TODO: Rounded corners for add fragment
         //dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_border);
 
         // Load meal types from res and load it into the dropdown
         String[] mealTypes = getResources().getStringArray(R.array.mealTypesArray);
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), R.layout.meal_type_dropdown_items, mealTypes);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), R.layout.dropdown_items, mealTypes);
         AutoCompleteTextView autoCompleteTextView = getView().findViewById(R.id.autoCompleteMealType);
         autoCompleteTextView.setAdapter(arrayAdapter);
 
@@ -187,7 +184,10 @@ public class AddFragment extends DialogFragment {
                         @Override
                         public void onGlobalLayout() {
                             if (food.getImageFilePath() != null && imgViewFlag) {
-                                putImageInView(food.getImageFilePath(), foodImgContainer);
+                                ArrayList<String> filePaths = food.getImageFilePaths();
+                                for (String path: filePaths) {
+                                    putImageInView(path, foodImgContainer);
+                                }
                                 imgViewFlag = false;
                             }
                             foodImgContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -437,8 +437,7 @@ public class AddFragment extends DialogFragment {
             if (!food.getFoodName().equals(foodInputText.getText().toString()) ||
                     !food.getMealType().equals(mealTypeInput.getText().toString()) ||
                     !food.getWithWho().equals(withWhoInputText.getText().toString()) ||
-                    !food.getSideNotes().equals(sideNotesInputText.getText().toString()) ||
-                    !food.getImageFilePath().equals(imgUri.toString())) {
+                    !food.getSideNotes().equals(sideNotesInputText.getText().toString())) {
                 return true;
             }
         } else {

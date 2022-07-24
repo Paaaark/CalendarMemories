@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsFragment"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Default view for Daily tab"
+            android:textColor="@color/black"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/defaultViewSetting"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:layout_margin="15dp"
+            app:layout_constraintBottom_toTopOf="@id/withWhoInputLayout"
+            app:layout_constraintTop_toBottomOf="@+id/foodInputTextLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/defaultViewSettingText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/applyBtn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/apply"
+            app:strokeColor="@color/minimal_pink"
+            app:strokeWidth="1dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

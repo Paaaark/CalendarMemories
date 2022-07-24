@@ -23,6 +23,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/tab_item_label_2" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_item_label_3" />
+
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.fragment.app.FragmentContainerView

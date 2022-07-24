@@ -10,11 +10,15 @@ import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
@@ -25,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int DAILY_TAB = 0;
     public static final int MONTHLY_TAB = 1;
+    public static final int SETTINGS_TAB = 2;
 
     private LinearLayoutCompat mainConstraintLayout;
     private TabLayout tabLayout;
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
     private GestureDetectorCompat gestureDetector;
+    private SharedPreferences sharedPref;
+    private int dailyFragmentViewSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +49,15 @@ public class MainActivity extends AppCompatActivity {
         fragmentContainerView = findViewById(R.id.mainFragmentContainer);
         tabLayout = findViewById(R.id.mainTabNavigator);
 
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
+
         fragmentContainerView.setMinimumHeight(mainConstraintLayout.getHeight() - tabLayout.getHeight());
 
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.mainFragmentContainer, DailyFragment.class, null)
+        fragmentTransaction.replace(R.id.mainFragmentContainer, new DailyFragment(dailyFragmentViewSetting))
                 .setReorderingAllowed(true)
-                .addToBackStack(null)
                 .commit();
 
         gestureDetector = new GestureDetectorCompat(this, new MyGestureListener());
@@ -58,10 +67,18 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
                 Fragment fragmentOne = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
                 Fragment fragmentTwo;
-                if (fragmentOne instanceof DailyFragment) {
-                    fragmentTwo = new CalendarFragment();
-                } else {
-                    fragmentTwo = new DailyFragment();
+                switch (tab.getPosition()) {
+                    case MONTHLY_TAB:
+                        fragmentTwo = new CalendarFragment();
+                        break;
+                    case SETTINGS_TAB:
+                        fragmentTwo = new SettingsFragment();
+                        break;
+                    case DAILY_TAB:
+                    default:
+                        dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
+                        fragmentTwo = new DailyFragment(dailyFragmentViewSetting);
+                        break;
                 }
                 //fragmentOne.setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
                 //fragmentTwo.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
@@ -95,14 +112,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
-        if (fragment instanceof DailyFragment) {
-            System.out.println("DailyFragment instance");
-        } else if (fragment instanceof AddFragment) {
-            System.out.println("AddFragment instance");
-        } else {
-            super.onBackPressed();
-        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.exit_app_title)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finishAndRemoveTask();
+                    }
+                })
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) { }
+                })
+                .show();
+        super.onBackPressed();
     }
 
     @Override
@@ -125,7 +148,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2,
                                float velocityX, float velocityY) {
-            System.out.println("onFling activated");
+            System.out.println
+                    ("onFling activated");
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
             float diffY = e2.getY() - e1.getY();
             float diffX = e2.getX() - e1.getX();

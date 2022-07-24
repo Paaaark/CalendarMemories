@@ -211,15 +211,19 @@ public class DailyFragment extends DialogFragment {
             }
         });
         listViewToggleBtn = v.findViewById(R.id.listViewToggleBtn);
-        listViewToggleBtn.setSelected(true);
+        listViewToggleBtn.setSelected(false);
         galleryViewToggleBtn = v.findViewById(R.id.galleryViewToggleBtn);
         galleryViewToggleBtn.setSelected(false);
+        if (currentLayout == R.layout.gallery_view) {
+            galleryViewToggleBtn.setSelected(true);
+        } else {
+            listViewToggleBtn.setSelected(true);
+        }
         listViewToggleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listViewToggleBtn.setSelected(true);
                 galleryViewToggleBtn.setSelected(false);
-                // #TODO: View toggle
                 currentLayout = R.layout.list_view;
                 updatePanel();
             }
@@ -283,7 +287,6 @@ public class DailyFragment extends DialogFragment {
     }
 
     public void updatePanel() {
-        // #TODO: updatePanel causes the app to crash
         // Remove all previous views in the panel
         for (int i = foodCardGridLayout.getChildCount() - 1; i >= 0; i--) {
             foodCardGridLayout.removeViewAt(i);
@@ -371,6 +374,17 @@ public class DailyFragment extends DialogFragment {
                         imgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
                 });
+
+        imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // #TODO: Update the panel according to the updates we got
+                PicturesFragment myPicturesFragment = new PicturesFragment(food);
+                myPicturesFragment.show(
+                        getChildFragmentManager(), AddFragment.TAG
+                );
+            }
+        });
 
         return container;
     }
