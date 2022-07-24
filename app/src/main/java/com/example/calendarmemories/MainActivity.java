@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) { }
                 })
                 .show();
-        super.onBackPressed();
     }
 
     @Override

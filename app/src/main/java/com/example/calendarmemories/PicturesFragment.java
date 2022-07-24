@@ -25,13 +25,15 @@ public class PicturesFragment extends DialogFragment {
     private int picturesWidth = 0;
     private View v;
     private GridLayout picturesGrid;
+    private ImageView parentImgView;
 
     public PicturesFragment() {
         super(R.layout.fragment_pictures);
     }
 
-    public PicturesFragment(Food food) {
+    public PicturesFragment(Food food, ImageView parentImgView) {
         this.food = food;
+        this.parentImgView = parentImgView;
     }
 
     @Override
@@ -80,6 +82,18 @@ public class PicturesFragment extends DialogFragment {
                 .centerCrop()
                 .apply(new RequestOptions().override(picturesWidth))
                 .into(imgView);
+
+        imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Glide.with(getContext()).load(imgUri)
+                        .centerCrop()
+                        .apply(new RequestOptions().override(parentImgView.getHeight()))
+                        .into(parentImgView);
+                dismiss();
+            }
+        });
+
         picturesGrid.addView(imgView);
     }
 }
