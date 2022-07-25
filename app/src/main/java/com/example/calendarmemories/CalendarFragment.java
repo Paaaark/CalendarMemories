@@ -43,6 +43,7 @@ public class CalendarFragment extends Fragment {
     private static final int TOTAL_ENTRIES = 42;
     private static final float DIMMED_TEXT = 0.2f;
     private static final float NORMAL_TEXT = 1.0f;
+    public static final String TAG = "CalendarFragment";
 
     private LocalDate date;
     private Button monthBtn, leftMonthBtn, rightMonthBtn;

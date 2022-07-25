@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -24,9 +25,10 @@ public class SettingsFragment extends Fragment {
     public static final String defaultViewSettingVal = "List view";
 
     private View v;
+    private LinearLayout anonymousLayout;
     private AutoCompleteTextView defaultViewSettingText;
-    private Button applyBtn;
-    private TextView helloUserTxt;
+    private Button applyBtn, userEditBtn;
+    private TextView helloUserTxt, anonymousLearnMore;
     private Context context;
     private SharedPreferences sharedPref;
     private String viewSettingVal;
@@ -89,8 +91,30 @@ public class SettingsFragment extends Fragment {
             helloUserTxt.setText("Hello, " +  user.getDisplayName() + "!");
             if (user.isAnonymous()) {
                 helloUserTxt.setText("Hello, Anonymous!");
+                anonymousLayout = v.findViewById(R.id.anonymousLayout);
+                anonymousLayout.setVisibility(View.VISIBLE);
+                anonymousLearnMore = v.findViewById(R.id.anonymousLearnMore);
+                anonymousLearnMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new MaterialAlertDialogBuilder(getContext())
+                                .setMessage(R.string.anonymous_learn_more_msg)
+                                .show();
+                    }
+                });
             }
         }
+
+        userEditBtn = v.findViewById(R.id.userEditBtn);
+        userEditBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginFragment myLoginFragment = new LoginFragment();
+                myLoginFragment.show(
+                        getChildFragmentManager(), myLoginFragment.TAG
+                );
+            }
+        });
 
         return v;
     }

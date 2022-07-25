@@ -8,6 +8,28 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/anonymousLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/minimal_pink_transparent"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You are logged-in as an Anonymous user."
+            android:textColor="@color/red"/>
+        <TextView
+            android:id="@+id/anonymousLearnMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/learn_more"
+            android:textColor="@color/light_blue_A400"
+            android:paddingLeft="5dp"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -37,6 +59,7 @@
             android:layout_weight="2"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/userEditBtn"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

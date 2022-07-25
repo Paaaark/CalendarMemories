@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 public class PicturesFragment extends DialogFragment {
 
+    public static final String TAG = "PicturesFragment";
+
     private Food food;
     private int picturesWidth = 0;
     private View v;

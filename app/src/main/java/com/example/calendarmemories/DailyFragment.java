@@ -381,7 +381,7 @@ public class DailyFragment extends DialogFragment {
                 // #TODO: Update the panel according to the updates we got
                 PicturesFragment myPicturesFragment = new PicturesFragment(food, imgView);
                 myPicturesFragment.show(
-                        getChildFragmentManager(), AddFragment.TAG
+                        getChildFragmentManager(), PicturesFragment.TAG
                 );
             }
         });
