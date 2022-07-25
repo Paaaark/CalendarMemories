@@ -9,16 +9,58 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:background="@color/minimal_pink_transparent"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_person"
+            android:layout_marginLeft="20dp"
+            app:tint="@color/minimal_pink" />
+
+        <TextView
+            android:id="@+id/helloUserTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hello user!"
+            android:layout_marginLeft="15dp"
+            android:textSize="20dp"
+            android:letterSpacing="0.1"
+            android:textColor="@color/black"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"/>
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:icon="@drawable/ic_edit_icon"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:strokeWidth="0dp"
+            android:layout_gravity="right"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:gravity="center_vertical">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Default view for Daily tab"
+            android:gravity="center"
             android:textColor="@color/black"/>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -26,7 +68,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
+            android:layout_weight="2"
             android:layout_margin="15dp"
             app:layout_constraintBottom_toTopOf="@id/withWhoInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/foodInputTextLayout">

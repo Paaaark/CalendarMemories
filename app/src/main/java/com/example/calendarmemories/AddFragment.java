@@ -197,6 +197,7 @@ public class AddFragment extends DialogFragment {
             withWhoInputText.setText(food.getWithWho());
             sideNotesInputText.setText(food.getSideNotes());
             mealTypeInput.setText(food.getMealType(), false);
+            addConfirmBtn.setText("Edit");
         }
 
         addConfirmBtn = getView().findViewById(R.id.addConfirmBtn);

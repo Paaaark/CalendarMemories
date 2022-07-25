@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/pictureStarBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             android:gravity="center"/>
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/pictureDeleteBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

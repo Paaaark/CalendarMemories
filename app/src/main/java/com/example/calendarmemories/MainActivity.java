@@ -1,5 +1,8 @@
 package com.example.calendarmemories;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -12,16 +15,24 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -38,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction fragmentTransaction;
     private GestureDetectorCompat gestureDetector;
     private SharedPreferences sharedPref;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
     private int dailyFragmentViewSetting;
 
     @Override
@@ -51,6 +64,24 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        if (user == null) {
+            mAuth.signInAnonymously()
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                user = mAuth.getCurrentUser();
+                                updateUI(user);
+                            } else {
+                                // If sign in fails, display a message to the user.
+                            }
+                        }
+                    });
+        }
 
         fragmentContainerView.setMinimumHeight(mainConstraintLayout.getHeight() - tabLayout.getHeight());
 
@@ -72,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTwo = new CalendarFragment();
                         break;
                     case SETTINGS_TAB:
-                        fragmentTwo = new SettingsFragment();
+                        fragmentTwo = new SettingsFragment(user);
                         break;
                     case DAILY_TAB:
                     default:
@@ -80,20 +111,9 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTwo = new DailyFragment(dailyFragmentViewSetting);
                         break;
                 }
-                //fragmentOne.setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
-                //fragmentTwo.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Z, true));
-                //fragmentTwo.setAllowEnterTransitionOverlap(true);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction()
                                 .replace(R.id.mainFragmentContainer, fragmentTwo);
-//                switch (tab.getPosition()) {
-//                    case DAILY_TAB:
-//                        fragmentTransaction.replace(R.id.mainFragmentContainer, fragmentTwo);
-//                        break;
-//                    case MONTHLY_TAB:
-//                        fragmentTransaction.replace(R.id.mainFragmentContainer, fragmentTwo);
-//                        break;
-//                }
                 fragmentTransaction.setReorderingAllowed(true)
                         .commit();
             }
@@ -108,6 +128,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void updateUI(FirebaseUser user) {
+        // #TODO: updateUI in MainActivity
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
+        if (fragment instanceof DailyFragment) {
+
+        } else if (fragment instanceof SettingsFragment) {
+            System.out.println("UI Updating");
+            Fragment nextFragment = new SettingsFragment(user);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainFragmentContainer, nextFragment)
+                    .setReorderingAllowed(true)
+                    .commit();
+        }
     }
 
     @Override

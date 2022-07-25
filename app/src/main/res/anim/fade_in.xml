@@ -7,9 +7,7 @@
         android:fromXScale="0.2"
         android:fromYScale="0.2"
         android:toXScale="1.0"
-        android:toYScale="1.0"
-        android:pivotX="90%"
-        android:pivotY="90%"/>
+        android:toYScale="1.0"/>
     <alpha
         android:duration="@android:integer/config_shortAnimTime"
         android:fromAlpha="0.5"

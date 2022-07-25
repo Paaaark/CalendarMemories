@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SettingsFragment extends Fragment {
 
@@ -24,13 +26,19 @@ public class SettingsFragment extends Fragment {
     private View v;
     private AutoCompleteTextView defaultViewSettingText;
     private Button applyBtn;
+    private TextView helloUserTxt;
     private Context context;
     private SharedPreferences sharedPref;
     private String viewSettingVal;
     private String[] viewOptions;
+    private FirebaseUser user;
 
     public SettingsFragment() {
         // Required empty public constructor
+    }
+
+    public SettingsFragment(FirebaseUser user) {
+        this.user = user;
     }
 
     @Override
@@ -75,6 +83,14 @@ public class SettingsFragment extends Fragment {
                         .show();
             }
         });
+
+        helloUserTxt = v.findViewById(R.id.helloUserTxt);
+        if (user != null) {
+            helloUserTxt.setText("Hello, " +  user.getDisplayName() + "!");
+            if (user.isAnonymous()) {
+                helloUserTxt.setText("Hello, Anonymous!");
+            }
+        }
 
         return v;
     }
