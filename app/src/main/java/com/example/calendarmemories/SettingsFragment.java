@@ -25,7 +25,7 @@ public class SettingsFragment extends Fragment {
     public static final String defaultViewSettingVal = "List view";
 
     private View v;
-    private LinearLayout anonymousLayout;
+    private LinearLayout anonymousLayout, mainContainer;
     private AutoCompleteTextView defaultViewSettingText;
     private Button applyBtn, userEditBtn;
     private TextView helloUserTxt, anonymousLearnMore;
@@ -109,9 +109,9 @@ public class SettingsFragment extends Fragment {
         userEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginFragment myLoginFragment = new LoginFragment();
-                myLoginFragment.show(
-                        getChildFragmentManager(), myLoginFragment.TAG
+                LoginPageFragment loginPageFragment = new LoginPageFragment();
+                loginPageFragment.show(
+                        getChildFragmentManager(), LoginPageFragment.TAG
                 );
             }
         });

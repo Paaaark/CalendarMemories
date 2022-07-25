@@ -1,8 +1,10 @@
 <resources>
+
     <style name="Widget.Theme.CalendarMemories.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
+
     <style name="Widget.App.Button.IconOnly" parent="Widget.MaterialComponents.Button">
         <item name="android:backgroundTint">@color/minimal_pink_light</item>
         <item name="iconPadding">0dp</item>
@@ -13,6 +15,7 @@
         <item name="android:minWidth">36dp</item>
         <item name="android:minHeight">36dp</item>
     </style>
+
     <style name="Widget.App.Button.IconOnlySelected" parent="Widget.MaterialComponents.Button">
         <item name="android:backgroundTint">@color/minimal_pink</item>
         <item name="iconPadding">0dp</item>
@@ -23,6 +26,7 @@
         <item name="android:minWidth">36dp</item>
         <item name="android:minHeight">36dp</item>
     </style>
+
     <style name="calendar_week_layout_param">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -30,6 +34,7 @@
         <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_marginEnd">5dp</item>
     </style>
+
     <style name="TextAppearance.AppCompat.calendar_food_entry" parent="TextAppearance.AppCompat">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -41,5 +46,12 @@
     <style name="full_screen_dialog">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <style name="FullScreenDialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
 </resources>

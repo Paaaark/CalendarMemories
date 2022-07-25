@@ -10,6 +10,7 @@
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/ic_plus_sign.xml" value="0.184" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/rounded_border.xml" value="0.183" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/toggle_button_custom.xml" value="0.183" />
+        <entry key="..\:/Projects/CalendarMemories/app/src/main/res/drawable/top_rounded.xml" value="0.184" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/activity_login.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/activity_main.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/calendar_day.xml" value="0.17447916666666666" />
@@ -21,7 +22,9 @@
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_daily.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_edit_picture.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_login.xml" value="0.17552083333333332" />
+        <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_login_page.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_pictures.xml" value="0.17552083333333332" />
+        <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_register.xml" value="0.16666666666666666" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/fragment_settings.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/gallery_view.xml" value="0.17552083333333332" />
         <entry key="..\:/Projects/CalendarMemories/app/src/main/res/layout/image_container.xml" value="0.17447916666666666" />
