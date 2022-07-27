@@ -29,7 +29,7 @@ public class LoginFragment extends DialogFragment {
     private View v;
     private Dialog dialog;
     private TextInputEditText emailFieldTxt, passwordFieldTxt;
-    private MaterialButton loginBtn, registerBtn;
+    private MaterialButton loginBtn;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -97,17 +97,6 @@ public class LoginFragment extends DialogFragment {
                     ViewHelper.getSnackbar(v, R.string.check_required_fields, Snackbar.LENGTH_LONG, null)
                             .show();
                 }
-            }
-        });
-
-        registerBtn = v.findViewById(R.id.registerBtn);
-        registerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RegisterFragment registerFragment = new RegisterFragment();
-                registerFragment.show(
-                        getChildFragmentManager(), RegisterFragment.TAG
-                );
             }
         });
 

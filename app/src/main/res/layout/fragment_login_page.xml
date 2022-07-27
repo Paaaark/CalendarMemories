@@ -12,17 +12,24 @@
         android:id="@+id/brandLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/transparent"
-        android:orientation="vertical">
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        android:gravity="center">
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@drawable/ic_food_sign"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="125dp"
+            android:src="@drawable/ic_food_notes"
             android:adjustViewBounds="true"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Welcome to CalendarMemories!"
+            android:textColor="@color/black"
+            android:text="Good to see you back!"
+            android:letterSpacing="0.08"
+            android:textSize="16dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"/>
     </LinearLayout>
 
