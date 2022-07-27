@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginPageFragment extends DialogFragment {
 
@@ -21,9 +23,16 @@ public class LoginPageFragment extends DialogFragment {
     private View v;
     private FragmentContainerView fragmentContainerView;
     private TabLayout tabLayout;
+    private FirebaseUser user;
+    private FirebaseAuth mAuth;
 
     public LoginPageFragment() {
         // Required empty public constructor
+    }
+
+    public LoginPageFragment(FirebaseAuth mAuth, FirebaseUser user) {
+        this.mAuth = mAuth;
+        this.user = user;
     }
 
     @Override
@@ -53,10 +62,10 @@ public class LoginPageFragment extends DialogFragment {
                 Fragment fragment;
                 switch (tab.getPosition()) {
                     case REGISTER_TAB:
-                        fragment = new RegisterFragment();
+                        fragment = new RegisterFragment(user);
                         break;
                     default:
-                        fragment = new LoginFragment();
+                        fragment = new LoginFragment(user);
                         break;
                 }
                 getChildFragmentManager().beginTransaction()

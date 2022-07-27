@@ -3,6 +3,7 @@ package com.example.calendarmemories;
 import android.app.Dialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -13,9 +14,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class RegisterFragment extends DialogFragment {
 
@@ -24,10 +32,15 @@ public class RegisterFragment extends DialogFragment {
     private TextInputEditText nameFieldTxt, emailFieldTxt, passwordFieldTxt, confirmPasswordFieldTxt;
     private MaterialButton registerBtn;
     private View v;
+    private FirebaseUser currentUser;
 
 
     public RegisterFragment() {
         // Required empty public constructor
+    }
+
+    public RegisterFragment(FirebaseUser user) {
+        this.currentUser = user;
     }
 
     @Override
@@ -58,7 +71,30 @@ public class RegisterFragment extends DialogFragment {
                     ViewHelper.getSnackbar(v, R.string.check_required_fields, Snackbar.LENGTH_LONG, null)
                             .show();
                 } else {
-                    // #TODO: Continue logging in
+                    String name = nameFieldTxt.getText().toString();
+                    String email = emailFieldTxt.getText().toString();
+                    String password = passwordFieldTxt.getText().toString();
+                    AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+                    currentUser.linkWithCredential(credential)
+                            .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = task.getResult().getUser();
+                                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name)
+                                                .build();
+                                        user.updateProfile(profileUpdate);
+                                        MainActivity mainActivity = (MainActivity) getActivity();
+                                        mainActivity.updateUI(user);
+                                        ViewHelper.getSnackbar(v, R.string.anonymous_link_success,
+                                                Snackbar.LENGTH_SHORT, null);
+                                    } else {
+                                        ViewHelper.getSnackbar(v, R.string.anonymous_link_failure,
+                                                Snackbar.LENGTH_LONG, null);
+                                    }
+                                }
+                            });
                 }
             }
         });

@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.transition.MaterialContainerTransform;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class SettingsFragment extends Fragment {
@@ -33,14 +35,15 @@ public class SettingsFragment extends Fragment {
     private SharedPreferences sharedPref;
     private String viewSettingVal;
     private String[] viewOptions;
+    private FirebaseAuth mAuth;
     private FirebaseUser user;
 
     public SettingsFragment() {
         // Required empty public constructor
     }
 
-    public SettingsFragment(FirebaseUser user) {
-        this.user = user;
+    public SettingsFragment(FirebaseAuth mAuth) {
+        this.mAuth = mAuth;
     }
 
     @Override
@@ -53,6 +56,8 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        user = mAuth.getCurrentUser();
 
         viewOptions = getResources().getStringArray(R.array.dailyFragmentViewOptions);
         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), R.layout.dropdown_items, viewOptions);
@@ -109,7 +114,7 @@ public class SettingsFragment extends Fragment {
         userEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginPageFragment loginPageFragment = new LoginPageFragment();
+                LoginPageFragment loginPageFragment = new LoginPageFragment(mAuth, user);
                 loginPageFragment.show(
                         getChildFragmentManager(), LoginPageFragment.TAG
                 );

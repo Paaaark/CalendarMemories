@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CalendarMemories</string>
+    <string name="app_name">Food Notes</string>
     <string name="tab_item_label_1">Daily</string>
     <string name="tab_item_label_2">Monthly</string>
     <string name="tab_item_label_3">Settings</string>
@@ -49,6 +49,8 @@
     <string name="valid_password">Please enter a valid password</string>
     <string name="valid_confirm_password">Password does not match</string>
     <string name="check_required_fields">Check the required fields and try again.</string>
+    <string name="anonymous_link_success">Your anonymous account is linked successfully!</string>
+    <string name="anonymous_link_failure">Linking your anonymous account has failed. Try again.</string>
     <!-- #TODO: Change the food_delete_msg -->
     <string name="food_deleted_msg">Food entry deleted.</string>
 

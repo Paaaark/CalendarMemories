@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                         fragmentTwo = new CalendarFragment();
                         break;
                     case SETTINGS_TAB:
-                        fragmentTwo = new SettingsFragment(user);
+                        fragmentTwo = new SettingsFragment(mAuth);
                         break;
                     case DAILY_TAB:
                     default:
@@ -132,12 +132,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateUI(FirebaseUser user) {
         // #TODO: updateUI in MainActivity
+        this.user = user;
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
         if (fragment instanceof DailyFragment) {
 
         } else if (fragment instanceof SettingsFragment) {
             System.out.println("UI Updating");
-            Fragment nextFragment = new SettingsFragment(user);
+            Fragment nextFragment = new SettingsFragment(mAuth);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.mainFragmentContainer, nextFragment)
                     .setReorderingAllowed(true)

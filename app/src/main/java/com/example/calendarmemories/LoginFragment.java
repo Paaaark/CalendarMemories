@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
@@ -15,11 +16,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class LoginFragment extends DialogFragment {
@@ -30,9 +35,14 @@ public class LoginFragment extends DialogFragment {
     private Dialog dialog;
     private TextInputEditText emailFieldTxt, passwordFieldTxt;
     private MaterialButton loginBtn;
+    private FirebaseUser currentUser;
 
     public LoginFragment() {
         // Required empty public constructor
+    }
+
+    public LoginFragment(FirebaseUser user) {
+        this.currentUser = user;
     }
 
     @Override
