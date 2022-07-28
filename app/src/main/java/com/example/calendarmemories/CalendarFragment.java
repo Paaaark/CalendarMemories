@@ -27,6 +27,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.transition.MaterialFadeThrough;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -59,12 +61,15 @@ public class CalendarFragment extends Fragment {
 
     // #TODO: User authentification
     private static String userDataDir = "userData";
-    private String userID = "tempUser";
     private static String foodDir = "foodData";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
-    public CalendarFragment() {
+    public CalendarFragment(FirebaseAuth mAuth) {
+        this.mAuth = mAuth;
+        user = this.mAuth.getCurrentUser();
         weeklyEntries = new ArrayList<LinearLayout>();
         calendarEntries = new ArrayList<LinearLayout>();
         dayToIndex = new HashMap<String, Integer>();
@@ -285,7 +290,7 @@ public class CalendarFragment extends Fragment {
     }
 
     private String getDatabasePath(LocalDate target) {
-        return joinPath(userDataDir, userID, foodDir, Time.getDayID(target));
+        return joinPath(userDataDir, user.getUid(), foodDir, Time.getDayID(target));
     }
 
     private String joinPath(String ... dirs) {

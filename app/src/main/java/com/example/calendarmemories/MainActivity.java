@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.mainFragmentContainer, new DailyFragment(dailyFragmentViewSetting))
+        fragmentTransaction.replace(R.id.mainFragmentContainer, new DailyFragment(dailyFragmentViewSetting, mAuth))
                 .setReorderingAllowed(true)
                 .commit();
 
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragmentTwo;
                 switch (tab.getPosition()) {
                     case MONTHLY_TAB:
-                        fragmentTwo = new CalendarFragment();
+                        fragmentTwo = new CalendarFragment(mAuth);
                         break;
                     case SETTINGS_TAB:
                         fragmentTwo = new SettingsFragment(mAuth);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     case DAILY_TAB:
                     default:
                         dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
-                        fragmentTwo = new DailyFragment(dailyFragmentViewSetting);
+                        fragmentTwo = new DailyFragment(dailyFragmentViewSetting, mAuth);
                         break;
                 }
                 fragmentManager = getSupportFragmentManager();

@@ -64,6 +64,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.platform.MaterialFade;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -100,12 +102,12 @@ public class DailyFragment extends DialogFragment {
     private GridLayout foodCardGridLayout;
     private int currentLayout = R.layout.list_view;
 
-    // #TODO: User authentification
     private static String userDataDir = "userData";
-    private String userID = "tempUser";
     private static String foodDir = "foodData";
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
     public DailyFragment() {
         super(R.layout.fragment_daily);
@@ -116,9 +118,11 @@ public class DailyFragment extends DialogFragment {
         this.date = date;
     }
 
-    public DailyFragment(int currentLayout) {
+    public DailyFragment(int currentLayout, FirebaseAuth mAuth) {
         super(R.layout.fragment_daily);
         this.currentLayout = currentLayout;
+        this.mAuth = mAuth;
+        this.user = mAuth.getCurrentUser();
     }
 
     @Override
@@ -305,14 +309,10 @@ public class DailyFragment extends DialogFragment {
     }
 
     public LinearLayout getCard(Food food) {
+        System.out.println("Current layout:" + currentLayout);
+        System.out.println("list_view:" + R.layout.list_view);
         LinearLayout container = (LinearLayout) getLayoutInflater().inflate(currentLayout, null);
-
-        if (currentLayout == R.layout.gallery_view) {
-            // #TODO: height should probably be different
-            System.out.println("Current layout is gallery_view");
-            container.setLayoutParams(new LinearLayout.LayoutParams(foodLinearLayout.getWidth() / 2,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-        }
+        System.out.println(container.toString());
 
         ImageView imgView = container.findViewById(R.id.imageContainer);
 
@@ -498,7 +498,7 @@ public class DailyFragment extends DialogFragment {
     }
 
     private String getDatabasePath() {
-        return joinPath(userDataDir, userID, foodDir, Time.getDayID(date));
+        return joinPath(userDataDir, user.getUid(), foodDir, Time.getDayID(date));
     }
 
     private String joinPath(String ... dirs) {
@@ -522,6 +522,7 @@ public class DailyFragment extends DialogFragment {
                 } else {
                     // #TODO: Failed task response
                     System.out.println("Task not successful");
+                    System.out.println(task.getException());
                 }
             }
         });

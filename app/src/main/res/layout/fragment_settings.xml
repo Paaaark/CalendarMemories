@@ -71,6 +71,18 @@
             app:strokeWidth="0dp"
             android:layout_gravity="right"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logoutBtn"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:icon="@drawable/ic_logout"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:strokeWidth="0dp"
+            android:layout_gravity="right"/>
+
     </LinearLayout>
 
     <LinearLayout
