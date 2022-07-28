@@ -65,7 +65,7 @@ public class LoginPageFragment extends DialogFragment {
                         fragment = new RegisterFragment(user);
                         break;
                     default:
-                        fragment = new LoginFragment(user);
+                        fragment = new LoginFragment();
                         break;
                 }
                 getChildFragmentManager().beginTransaction()

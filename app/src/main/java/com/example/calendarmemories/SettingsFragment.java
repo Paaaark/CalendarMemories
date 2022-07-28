@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
@@ -29,7 +30,7 @@ public class SettingsFragment extends Fragment {
     private View v;
     private LinearLayout anonymousLayout, mainContainer;
     private AutoCompleteTextView defaultViewSettingText;
-    private Button applyBtn, userEditBtn;
+    private MaterialButton applyBtn, userEditBtn, loginBtn, logoutBtn;
     private TextView helloUserTxt, anonymousLearnMore;
     private Context context;
     private SharedPreferences sharedPref;
@@ -110,8 +111,8 @@ public class SettingsFragment extends Fragment {
             }
         }
 
-        userEditBtn = v.findViewById(R.id.userEditBtn);
-        userEditBtn.setOnClickListener(new View.OnClickListener() {
+        loginBtn = v.findViewById(R.id.loginBtn);
+        loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LoginPageFragment loginPageFragment = new LoginPageFragment(mAuth, user);
@@ -120,6 +121,32 @@ public class SettingsFragment extends Fragment {
                 );
             }
         });
+        logoutBtn = v.findViewById(R.id.logoutBtn);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new MaterialAlertDialogBuilder(getContext())
+                        .setMessage(R.string.logout_msg)
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) { }
+                        })
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mAuth.signOut();
+                                ((MainActivity) getActivity()).updateUI(null);
+                            }
+                        })
+                        .show();
+            }
+        });
+        userEditBtn = v.findViewById(R.id.userEditBtn);
+        if (user != null && !user.isAnonymous()) {
+            logoutBtn.setVisibility(View.VISIBLE);
+            userEditBtn.setVisibility(View.VISIBLE);
+            loginBtn.setVisibility(View.GONE);
+        }
 
         return v;
     }

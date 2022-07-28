@@ -64,23 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
+        dailyFragmentViewSetting = checkViewSettingValid(dailyFragmentViewSetting);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         if (user == null) {
-            mAuth.signInAnonymously()
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                user = mAuth.getCurrentUser();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                            }
-                        }
-                    });
+            signInAnonymously();
         }
 
         fragmentContainerView.setMinimumHeight(mainConstraintLayout.getHeight() - tabLayout.getHeight());
@@ -108,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     case DAILY_TAB:
                     default:
                         dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
+                        dailyFragmentViewSetting = checkViewSettingValid(dailyFragmentViewSetting);
                         fragmentTwo = new DailyFragment(dailyFragmentViewSetting, mAuth);
                         break;
                 }
@@ -133,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
     public void updateUI(FirebaseUser user) {
         // #TODO: updateUI in MainActivity
         this.user = user;
+        if (user == null) {
+            signInAnonymously();
+        }
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
         if (fragment instanceof DailyFragment) {
 
@@ -208,6 +201,30 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         }
+    }
+
+    public int checkViewSettingValid(int viewSetting) {
+        if (viewSetting != R.layout.list_view && viewSetting != R.layout.gallery_view) {
+            return R.layout.list_view;
+        } else {
+            return viewSetting;
+        }
+    }
+
+    public void signInAnonymously() {
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                        }
+                    }
+                });
     }
 
 }

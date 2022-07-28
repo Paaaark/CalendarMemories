@@ -19,11 +19,13 @@ import android.view.WindowManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
@@ -36,9 +38,10 @@ public class LoginFragment extends DialogFragment {
     private TextInputEditText emailFieldTxt, passwordFieldTxt;
     private MaterialButton loginBtn;
     private FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
 
     public LoginFragment() {
-        // Required empty public constructor
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public LoginFragment(FirebaseUser user) {
@@ -102,7 +105,26 @@ public class LoginFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if (validateFields()) {
-                    // #TODO: Continue logging in
+                    String email = emailFieldTxt.getText().toString();
+                    String password = passwordFieldTxt.getText().toString();
+                    mAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        // Sign in success, update UI with the signed-in user's information
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        ((MainActivity) getActivity()).updateUI(user);
+                                        dismiss();
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        new MaterialAlertDialogBuilder(getContext())
+                                                .setTitle(R.string.login_failed_title)
+                                                .setMessage(R.string.login_failed_msg)
+                                                .show();
+                                    }
+                                }
+                            });
                 } else {
                     ViewHelper.getSnackbar(v, R.string.check_required_fields, Snackbar.LENGTH_LONG, null)
                             .show();

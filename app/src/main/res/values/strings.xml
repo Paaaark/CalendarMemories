@@ -51,6 +51,11 @@
     <string name="check_required_fields">Check the required fields and try again.</string>
     <string name="anonymous_link_success">Your anonymous account is linked successfully!</string>
     <string name="anonymous_link_failure">Linking your anonymous account has failed. Try again.</string>
+    <string name="logout_msg">Logout from your account? You will be able to access your memories
+                              if and only if you sign in to this account again. </string>
+    <string name="login_failed_title">Login failed</string>
+    <string name="login_failed_msg">Either your email is not registered or your password does not match
+    the given email. Please try again. </string>
     <!-- #TODO: Change the food_delete_msg -->
     <string name="food_deleted_msg">Food entry deleted.</string>
 

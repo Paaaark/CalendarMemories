@@ -69,7 +69,21 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="right"/>
+            android:layout_gravity="right"
+            android:visibility="gone"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/loginBtn"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:icon="@drawable/ic_login"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:strokeWidth="0dp"
+            android:layout_gravity="right"
+            android:visibility="visible"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/logoutBtn"
@@ -81,7 +95,8 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="right"/>
+            android:layout_gravity="right"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
