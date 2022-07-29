@@ -8,13 +8,10 @@ import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,9 +19,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -72,7 +67,7 @@ public class LoginFragment extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!Patterns.EMAIL_ADDRESS.matcher(emailFieldTxt.getText().toString()).matches()) {
-                    emailFieldTxt.setError("Invalid email address");
+                    emailFieldTxt.setError("Invalid email address", null);
                 } else {
                     emailFieldTxt.setError(null);
                 }
@@ -88,7 +83,7 @@ public class LoginFragment extends DialogFragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String password = passwordFieldTxt.getText().toString().trim();
                 if (password.length() == 0) {
-                    passwordFieldTxt.setError(getString(R.string.valid_password));
+                    passwordFieldTxt.setError(getString(R.string.valid_password), null);
                 } else {
                     passwordFieldTxt.setError(null);
                 }
@@ -156,13 +151,13 @@ public class LoginFragment extends DialogFragment {
         String password = passwordFieldTxt.getText().toString().trim();
         boolean valid = true;
         if (email.length() == 0) {
-            emailFieldTxt.setError("Please enter an email");
+            emailFieldTxt.setError("Please enter an email", null);
             valid = false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(emailFieldTxt.getText().toString()).matches()) {
             valid = false;
         }
         if (password.length() == 0) {
-            passwordFieldTxt.setError("Please enter a password");
+            passwordFieldTxt.setError("Please enter a password", null);
             valid = false;
         }
         return valid;

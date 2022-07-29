@@ -20,7 +20,7 @@
             android:layout_marginBottom="10dp"
             android:layout_width="wrap_content"
             android:layout_height="125dp"
-            android:src="@drawable/ic_food_notes"
+            android:src="@drawable/ic_food_notes__1_"
             android:adjustViewBounds="true"/>
         <TextView
             android:layout_width="match_parent"

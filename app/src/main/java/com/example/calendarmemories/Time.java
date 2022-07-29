@@ -3,12 +3,20 @@ package com.example.calendarmemories;
 import com.google.android.material.datepicker.CalendarConstraints;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 public class Time {
+
+    public static char[] ZEROES = new char[100];
+    static {
+        Arrays.fill(ZEROES, '0');
+    }
 
     public static LocalDate getTodaysDate() {
         return LocalDate.now();
@@ -70,6 +78,21 @@ public class Time {
         return -1;
     }
 
+    public static String getTimeStamp() {
+        Instant instant = Instant.now();
+        String seconds = Long.toString(instant.getEpochSecond());
+        return seconds;
+    }
+
+    public static String getUID() {
+        Instant instant = Instant.now();
+        Random rand = new Random(instant.getEpochSecond());
+        long temp = rand.nextLong();
+        while (temp < 0) temp = rand.nextLong();
+        String randID = prependLong(Long.toString(temp));
+        return prependLong(getTimeStamp()) + randID;
+    }
+
     public static long inMillis(LocalDate today) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(today.getYear(), today.getMonthValue() - 1, today.getDayOfMonth());
@@ -93,5 +116,12 @@ public class Time {
         Calendar calendar = Calendar.getInstance();
         calendar.set(today.getYear(), today.getMonthValue() - 1, today.lengthOfMonth());
         return calendar.getTimeInMillis();
+    }
+
+    private static String prependLong(String time) {
+        if (time.length() < 19) {
+            time = new String(ZEROES, 0, 19 - time.length()) + time;
+        }
+        return time;
     }
 }

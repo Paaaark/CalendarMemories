@@ -38,7 +38,8 @@
             android:paddingRight="30dp"
             style="@style/Widget.Theme.CalendarMemories.TextInputLayout"
             app:errorEnabled="true"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:errorIconDrawable="@null">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordFieldTxt"
                 android:layout_width="match_parent"
