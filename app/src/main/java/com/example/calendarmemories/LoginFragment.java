@@ -23,6 +23,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.sql.SQLOutput;
+
 
 public class LoginFragment extends DialogFragment {
 
@@ -110,7 +112,7 @@ public class LoginFragment extends DialogFragment {
                                         // Sign in success, update UI with the signed-in user's information
                                         FirebaseUser user = mAuth.getCurrentUser();
                                         ((MainActivity) getActivity()).updateUI(user);
-                                        dismiss();
+                                        ((LoginPageFragment) getParentFragment()).dismissLoginPage();
                                     } else {
                                         // If sign in fails, display a message to the user.
                                         new MaterialAlertDialogBuilder(getContext())

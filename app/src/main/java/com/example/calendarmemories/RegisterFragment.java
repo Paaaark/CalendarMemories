@@ -82,9 +82,14 @@ public class RegisterFragment extends DialogFragment {
                                         UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                                 .setDisplayName(name)
                                                 .build();
-                                        user.updateProfile(profileUpdate);
-                                        MainActivity mainActivity = (MainActivity) getActivity();
-                                        mainActivity.updateUI(user);
+                                        user.updateProfile(profileUpdate)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        ((MainActivity) getActivity()).updateUI(user);
+                                                        ((LoginPageFragment) getParentFragment()).dismissLoginPage();
+                                                    }
+                                                });
                                         ViewHelper.getSnackbar(v, R.string.anonymous_link_success,
                                                 Snackbar.LENGTH_SHORT, null);
                                     } else {

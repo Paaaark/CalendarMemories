@@ -10,6 +10,12 @@
             android:title="Personal"
             android:icon="@drawable/ic_person"
             android:iconTintMode="@color/minimal_pink"/>
+
+        <item
+            android:id="@+id/menuCouple"
+            android:title="Couple"
+            android:icon="@drawable/ic_heart"/>
+
         <item
             android:id="@+id/menuSocial"
             android:title="Social"

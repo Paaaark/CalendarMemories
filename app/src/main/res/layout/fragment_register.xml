@@ -25,7 +25,7 @@
                 android:id="@+id/nameFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Name" />
+                android:hint="@string/name" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,7 +44,7 @@
                 android:id="@+id/emailFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -66,7 +66,7 @@
                 android:id="@+id/passwordFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -86,7 +86,7 @@
                 android:id="@+id/confirmPasswordFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Confirm Password"
+                android:hint="@string/confirm_password"
                 android:inputType="textPassword"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -100,7 +100,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             app:cornerRadius="15dp"
-            android:text="Register"
+            android:text="@string/register"
             app:strokeColor="@color/minimal_pink" />
 
     </RelativeLayout>

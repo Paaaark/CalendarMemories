@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailField"
@@ -23,7 +23,7 @@
                 android:id="@+id/emailFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress"/>
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -44,7 +44,7 @@
                 android:id="@+id/passwordFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -57,7 +57,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             app:cornerRadius="15dp"
-            android:text="Login"
+            android:text="@string/login"
             app:strokeColor="@color/minimal_pink" />
 
     </RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Basic strings -->
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="learn_more"><u>Learn more</u></string>
+
+    <!-- SettingsFragment Strings -->
+    <string name="logged_in_as_anonymous">You are logged-in as an Anonymous user.</string>
+    <string name="default_hello_user">Hello user!</string>
+    <string name="default_view_setting">Default view for Daily tab</string>
+    <string name="info_incomplete_alert">Your account information is incomplete.</string>
+    <string name="info_incomplete_detail">Your friends will not be able to find you if your account information is incomplete.
+        To complete your account information, please click the edit button beside your name.</string>
+    <string name="anonymous_learn_more_msg">You are logged-in as an anonymous user. All your data are stored in
+                                            database temporarily and will be deleted in <u>30 days</u>. If you want
+                                            to preserve your data, click the login button by your user name and
+                                            login as one of the methods as directed.</string>
+
+    <!-- LoginPageFragment Strings -->
+    <string name="login_page_greeting">Good to see you back!</string>
+
+</resources>

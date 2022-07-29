@@ -13,4 +13,13 @@ public class ViewHelper {
             return Snackbar.make(v, msgRes, duration).setAnchorView(anchor);
         }
     }
+
+    public static String joinPath(String ... dirs) {
+        String path = "";
+        for (int i = 0; i < dirs.length; i++) {
+            if (i != 0) path += "/";
+            path += dirs[i];
+        }
+        return path;
+    }
 }

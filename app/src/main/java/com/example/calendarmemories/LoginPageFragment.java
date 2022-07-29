@@ -89,6 +89,10 @@ public class LoginPageFragment extends DialogFragment {
         return v;
     }
 
+    public void dismissLoginPage() {
+        dismiss();
+    }
+
     @Override
     public int getTheme() {
         return R.style.FullScreenDialog;

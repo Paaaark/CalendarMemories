@@ -498,16 +498,7 @@ public class DailyFragment extends DialogFragment {
     }
 
     private String getDatabasePath() {
-        return joinPath(userDataDir, user.getUid(), foodDir, Time.getDayID(date));
-    }
-
-    private String joinPath(String ... dirs) {
-        String path = "";
-        for (int i = 0; i < dirs.length; i++) {
-            if (i != 0) path += "/";
-            path += dirs[i];
-        }
-        return path;
+        return ViewHelper.joinPath(userDataDir, user.getUid(), foodDir, Time.getDayID(date));
     }
 
     public void getDailyMemory() {

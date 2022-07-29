@@ -14,12 +14,13 @@
         android:layout_height="wrap_content"
         android:background="@color/minimal_pink_transparent"
         android:orientation="horizontal"
-        android:paddingLeft="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:visibility="gone">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You are logged-in as an Anonymous user."
+            android:text="@string/logged_in_as_anonymous"
             android:textColor="@color/red"/>
         <TextView
             android:id="@+id/anonymousLearnMore"
@@ -27,7 +28,32 @@
             android:layout_height="wrap_content"
             android:text="@string/learn_more"
             android:textColor="@color/light_blue_A400"
-            android:paddingLeft="5dp"/>
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/userInfoIncompleteLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/minimal_pink_transparent"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/info_incomplete_alert"
+            android:textColor="@color/red"/>
+        <TextView
+            android:id="@+id/incompleteLearnMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/learn_more"
+            android:textColor="@color/light_blue_A400"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -41,16 +67,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_person"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             app:tint="@color/minimal_pink" />
 
         <TextView
             android:id="@+id/helloUserTxt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello user!"
-            android:layout_marginLeft="15dp"
-            android:textSize="20dp"
+            android:text="@string/default_hello_user"
+            android:layout_marginStart="15dp"
+            android:textSize="20sp"
             android:letterSpacing="0.1"
             android:textColor="@color/black"/>
 
@@ -69,7 +95,7 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:visibility="gone"/>
 
         <com.google.android.material.button.MaterialButton
@@ -82,7 +108,7 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:visibility="visible"/>
 
         <com.google.android.material.button.MaterialButton
@@ -95,7 +121,7 @@
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:visibility="gone"/>
 
     </LinearLayout>
@@ -110,7 +136,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Default view for Daily tab"
+            android:text="@string/default_view_setting"
             android:gravity="center"
             android:textColor="@color/black"/>
 

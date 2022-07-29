@@ -16,6 +16,7 @@ import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,9 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        if (user == null) {
-            signInAnonymously();
-        }
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainFragmentContainer, new PersonalFragment(sharedPref, mAuth))
@@ -73,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menuSettings:
                         fragment = new SettingsFragment(mAuth);
                         break;
+                    case R.id.menuCouple:
+                        fragment = new CoupleFragment(sharedPref, mAuth);
+                        break;
                     case R.id.menuSocial:
                         fragment = new SocialFragment(sharedPref, mAuth);
                         break;
@@ -90,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        if (user == null) {
+            signInAnonymously();
+        }
+        updateUI(user);
+
         gestureDetector = new GestureDetectorCompat(this, new MainActivity.MyGestureListener());
     }
 
@@ -99,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             signInAnonymously();
         }
+        View headerView = navigationDrawer.getHeaderView(0);
+        TextView userName = headerView.findViewById(R.id.navigationDrawerUsername);
+        TextView emailAddress = headerView.findViewById(R.id.navigationDrawerEmail);
+        if (user == null || user.isAnonymous()) {
+            userName.setText("Anonymous");
+            emailAddress.setText("example@example.com");
+        } else {
+            userName.setText(user.getDisplayName());
+            emailAddress.setText(user.getEmail());
+        }
+
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
         if (fragment instanceof PersonalFragment) {
             ((PersonalFragment) fragment).updateUI(user);
@@ -127,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         super.dispatchTouchEvent(event);
-        System.out.println("Hello1");
         return gestureDetector.onTouchEvent(event);
     }
 
