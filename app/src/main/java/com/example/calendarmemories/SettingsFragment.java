@@ -90,24 +90,6 @@ public class SettingsFragment extends Fragment {
         });
 
         helloUserTxt = v.findViewById(R.id.helloUserTxt);
-        if (user != null) {
-            helloUserTxt.setText("Hello, " +  user.getDisplayName() + "!");
-            if (user.isAnonymous()) {
-                helloUserTxt.setText("Hello, Anonymous!");
-                anonymousLayout = v.findViewById(R.id.anonymousLayout);
-                anonymousLayout.setVisibility(View.VISIBLE);
-                anonymousLearnMore = v.findViewById(R.id.anonymousLearnMore);
-                anonymousLearnMore.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setMessage(R.string.anonymous_learn_more_msg)
-                                .show();
-                    }
-                });
-            }
-        }
-
         loginBtn = v.findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,13 +121,41 @@ public class SettingsFragment extends Fragment {
             }
         });
         userEditBtn = v.findViewById(R.id.userEditBtn);
-        if (user != null && !user.isAnonymous()) {
+        updateUI(user);
+
+        return v;
+    }
+
+    public String helloName() {
+        if (user == null || user.isAnonymous()) {
+            return "Hello, Anonymous!";
+        } else {
+            return "Hello, " + user.getDisplayName() + "!";
+        }
+    }
+
+    public void updateUI(FirebaseUser user) {
+        helloUserTxt.setText(helloName());
+        if (user == null || user.isAnonymous()) {
+            logoutBtn.setVisibility(View.GONE);
+            userEditBtn.setVisibility(View.GONE);
+            loginBtn.setVisibility(View.VISIBLE);
+            anonymousLayout = v.findViewById(R.id.anonymousLayout);
+            anonymousLayout.setVisibility(View.VISIBLE);
+            anonymousLearnMore = v.findViewById(R.id.anonymousLearnMore);
+            anonymousLearnMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setMessage(R.string.anonymous_learn_more_msg)
+                            .show();
+                }
+            });
+        } else {
             logoutBtn.setVisibility(View.VISIBLE);
             userEditBtn.setVisibility(View.VISIBLE);
             loginBtn.setVisibility(View.GONE);
         }
-
-        return v;
     }
 
     private void saveChanges() {

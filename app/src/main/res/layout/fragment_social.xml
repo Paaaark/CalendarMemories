@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id="@+id/mainLinearLayout"
+    tools:context=".SocialFragment"
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
@@ -16,19 +14,18 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/personal_tab_1" />
+            android:text="@string/social_tab_2" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/personal_tab_2" />
+            android:text="@string/social_tab_2" />
 
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/mainFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
 </LinearLayout>

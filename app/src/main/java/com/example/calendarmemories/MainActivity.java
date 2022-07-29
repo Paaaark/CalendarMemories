@@ -68,7 +68,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 // #TODO: Edit this when we have social tab
+                Fragment fragment;
+                switch (item.getItemId()) {
+                    case R.id.menuSettings:
+                        fragment = new SettingsFragment(mAuth);
+                        break;
+                    case R.id.menuPersonal:
+                    default:
+                        fragment = new PersonalFragment(sharedPref, mAuth);
+                        break;
+                }
                 drawerLayout.close();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.mainFragmentContainer, fragment)
+                        .setReorderingAllowed(true)
+                        .commit();
                 return true;
             }
         });
@@ -85,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.mainFragmentContainer);
         if (fragment instanceof PersonalFragment) {
             ((PersonalFragment) fragment).updateUI(user);
+        } else if (fragment instanceof SettingsFragment) {
+            ((SettingsFragment) fragment).updateUI(user);
         }
     }
 

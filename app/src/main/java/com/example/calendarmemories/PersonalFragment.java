@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,7 +33,7 @@ public class PersonalFragment extends Fragment {
     public static final int MONTHLY_TAB = 1;
     public static final int SETTINGS_TAB = 2;
 
-    private LinearLayoutCompat mainConstraintLayout;
+    private LinearLayout mainLinearLayout;
     private TabLayout tabLayout;
     private FragmentContainerView fragmentContainerView;
     private FragmentManager fragmentManager;
@@ -61,14 +62,14 @@ public class PersonalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_personal, container, false);
 
-        mainConstraintLayout = v.findViewById(R.id.mainConstraintLayout);
+        mainLinearLayout = v.findViewById(R.id.mainLinearLayout);
         fragmentContainerView = v.findViewById(R.id.mainFragmentContainer);
         tabLayout = v.findViewById(R.id.mainTabNavigator);
 
         dailyFragmentViewSetting = sharedPref.getInt(getString(R.string.saved_daily_view_setting_key), R.layout.list_view);
         dailyFragmentViewSetting = checkViewSettingValid(dailyFragmentViewSetting);
 
-        fragmentContainerView.setMinimumHeight(mainConstraintLayout.getHeight() - tabLayout.getHeight());
+        fragmentContainerView.setMinimumHeight(mainLinearLayout.getHeight() - tabLayout.getHeight());
 
         fragmentManager = getChildFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -84,9 +85,6 @@ public class PersonalFragment extends Fragment {
                 switch (tab.getPosition()) {
                     case MONTHLY_TAB:
                         fragmentTwo = new CalendarFragment(mAuth);
-                        break;
-                    case SETTINGS_TAB:
-                        fragmentTwo = new SettingsFragment(mAuth);
                         break;
                     case DAILY_TAB:
                     default:

@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Food Notes</string>
-    <string name="tab_item_label_1">Daily</string>
-    <string name="tab_item_label_2">Monthly</string>
-    <string name="tab_item_label_3">Settings</string>
+    <string name="personal_tab_1">Daily</string>
+    <string name="personal_tab_2">Monthly</string>
+    <string name="social_tab_1">Home</string>
+    <string name="social_tab_2">Search</string>
     <string-array name="mealTypesArray">
         <item>Breakfast</item>
         <item>Brunch</item>
