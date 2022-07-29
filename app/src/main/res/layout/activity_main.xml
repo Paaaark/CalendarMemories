@@ -24,7 +24,7 @@
                 android:id="@+id/topAppBar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:title="Title"
+                app:title="Food Notes"
                 app:navigationIcon="@drawable/ic_menu_icon"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 />
@@ -51,5 +51,6 @@
         app:menu="@menu/navigation_drawer_menu"
         app:headerLayout="@layout/navigation_drawer_header"
         android:background="@color/minimal_pink_transparent"
-        app:itemIconTint="@color/minimal_pink"/>
+        app:itemIconTint="@color/minimal_pink"
+        app:itemTextAppearance="@style/UbuntuText"/>
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menuSettings:
                         fragment = new SettingsFragment(mAuth);
                         break;
+                    case R.id.menuSocial:
+                        fragment = new SocialFragment(sharedPref, mAuth);
+                        break;
                     case R.id.menuPersonal:
                     default:
                         fragment = new PersonalFragment(sharedPref, mAuth);
