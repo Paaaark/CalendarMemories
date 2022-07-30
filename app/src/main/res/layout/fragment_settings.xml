@@ -70,15 +70,29 @@
             android:layout_marginStart="20dp"
             app:tint="@color/minimal_pink" />
 
-        <TextView
-            android:id="@+id/helloUserTxt"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/default_hello_user"
-            android:layout_marginStart="15dp"
-            android:textSize="20sp"
-            android:letterSpacing="0.1"
-            android:textColor="@color/black"/>
+            android:orientation="vertical"
+            android:layout_marginStart="15dp">
+            <TextView
+                android:id="@+id/helloUserTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_hello_user"
+                android:textSize="20sp"
+                android:letterSpacing="0.1"
+                android:textColor="@color/black"/>
+            <TextView
+                android:id="@+id/helloUserSubTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name"
+                android:letterSpacing="0.1"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+
 
         <View
             android:layout_width="0dp"

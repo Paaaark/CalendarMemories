@@ -43,7 +43,7 @@ public class SettingsFragment extends Fragment {
     private LinearLayout anonymousLayout, mainContainer;
     private AutoCompleteTextView defaultViewSettingText;
     private MaterialButton applyBtn, userEditBtn, loginBtn, logoutBtn;
-    private TextView helloUserTxt, anonymousLearnMore;
+    private TextView helloUserTxt, helloUserSubTxt, anonymousLearnMore;
     private Context context;
     private SharedPreferences sharedPref;
     private String viewSettingVal;
@@ -77,6 +77,7 @@ public class SettingsFragment extends Fragment {
         userEditBtn = v.findViewById(R.id.userEditBtn);
         applyBtn = v.findViewById(R.id.applyBtn);
         helloUserTxt = v.findViewById(R.id.helloUserTxt);
+        helloUserSubTxt = v.findViewById(R.id.helloUserSubTxt);
         loginBtn = v.findViewById(R.id.loginBtn);
         logoutBtn = v.findViewById(R.id.logoutBtn);
 
@@ -165,9 +166,14 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    public String helloName(String name) {
+        return "Hello, " + name + "!";
+    }
+
     public void updateUI(FirebaseUser user) {
         System.out.println("SettingsFragment updateUI called");
         helloUserTxt.setText(helloName());
+        helloUserSubTxt.setVisibility(View.GONE);
         if (user == null || user.isAnonymous()) {
             logoutBtn.setVisibility(View.GONE);
             userEditBtn.setVisibility(View.GONE);
@@ -184,7 +190,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void didCompleteProfile() {
-        DocumentReference userDB = db.document(getPathForAccountInfo());
+        DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
         userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -192,9 +198,12 @@ public class SettingsFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (!document.exists()) { showIncompleteAlert(); return; }
                     Map<String, Object> data = document.getData();
-                    String completed = (String) data.get(COMPLETE_FIELD);
-                    if (completed == null || completed.equals(COMPLETED)) { showIncompleteAlert(); return; }
+                    String completed = data.get(COMPLETE_FIELD).toString();
+                    if (completed == null || !completed.equals(COMPLETED)) { showIncompleteAlert(); return; }
                     hideIncompleteAlert();
+                    helloUserTxt.setText(helloName(data.get("username").toString()));
+                    helloUserSubTxt.setText(user.getDisplayName());
+                    helloUserSubTxt.setVisibility(View.VISIBLE);
                 } else {
                     // #TODO: task not successful response
                 }

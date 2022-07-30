@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,8 @@ public class EditUserFragment extends DialogFragment {
 
     public static final String USERNAME_KEY = "username";
     public static final String TAG = "EditUserFragment";
+    private static final String COMPLETE_FIELD = "profileCompleted";
+    private static final String COMPLETED = "completed";
 
     private View v;
     private TextInputEditText usernameFieldTxt, nameFieldTxt, emailFieldTxt, passwordFieldTxt,
@@ -129,6 +132,7 @@ public class EditUserFragment extends DialogFragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String username = usernameFieldTxt.getText().toString();
                                 if (username != null && username.length() > 0) applyUsername();
+                                dismiss();
                             }
                         })
                         .show();
@@ -142,7 +146,22 @@ public class EditUserFragment extends DialogFragment {
         DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
         Map<String, Object> dataToModify = new HashMap<String, Object>();
         dataToModify.put(USERNAME_KEY, usernameFieldTxt.getText().toString());
-        userDB.update(dataToModify);
+        dataToModify.put(COMPLETE_FIELD, COMPLETED);
+        userDB.set(dataToModify)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            ((SettingsFragment) getParentFragment()).updateUI(user);
+                            ViewHelper.getSnackbar(v, R.string.user_info_update_success,
+                                    Snackbar.LENGTH_SHORT, null);
+                        } else {
+                            ViewHelper.getSnackbar(v, R.string.user_info_update_failure,
+                                    Snackbar.LENGTH_LONG, null);
+                        }
+                        dismiss();
+                    }
+                });
     }
 
     public void setUsername() {
