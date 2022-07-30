@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragment">
+    tools:context=".settings.LoginFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,19 +12,20 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailField"
+            style="@style/Widget.Theme.CalendarMemories.TextInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:paddingLeft="30dp"
             android:paddingRight="30dp"
-            android:layout_marginTop="20dp"
-            style="@style/Widget.Theme.CalendarMemories.TextInputLayout"
             app:errorEnabled="true">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailFieldTxt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="@string/email"
-                android:inputType="textEmailAddress"/>
+                android:inputType="textEmailAddress" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,8 +57,8 @@
             android:layout_below="@id/passwordField"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            app:cornerRadius="15dp"
             android:text="@string/login"
+            app:cornerRadius="15dp"
             app:strokeColor="@color/minimal_pink" />
 
     </RelativeLayout>

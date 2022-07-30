@@ -1,4 +1,4 @@
-package com.example.calendarmemories;
+package com.example.calendarmemories.settings;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -13,6 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.calendarmemories.MainActivity;
+import com.example.calendarmemories.R;
+import com.example.calendarmemories.ViewHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
@@ -22,8 +25,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.sql.SQLOutput;
 
 
 public class LoginFragment extends DialogFragment {
@@ -149,7 +150,7 @@ public class LoginFragment extends DialogFragment {
     }
 
     public boolean validateFields() {
-        String email = emailFieldTxt.getText().toString().trim();
+        String email = emailFieldTxt.getText().toString();
         String password = passwordFieldTxt.getText().toString().trim();
         boolean valid = true;
         if (email.length() == 0) {

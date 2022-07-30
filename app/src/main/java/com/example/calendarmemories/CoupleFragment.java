@@ -24,7 +24,6 @@ import java.util.Map;
 
 public class CoupleFragment extends Fragment {
 
-    private static final String USERS_DIR = "users";
     private static final String COUPLE_KEY = "coupleUID";
 
     private View v;
@@ -65,11 +64,6 @@ public class CoupleFragment extends Fragment {
 
         return v;
     }
-
-    public String getPathForAccountInfo() {
-        return ViewHelper.joinPath(USERS_DIR, user.getUid());
-    }
-
     public void isCoupleUpdatePanel() {
         if (user == null || user.isAnonymous()) {
             noCoupleAlert.setVisibility(View.VISIBLE);
@@ -78,7 +72,7 @@ public class CoupleFragment extends Fragment {
             coupleUID = null;
         } else {
             System.out.println("Logged in");
-            DocumentReference userDB = db.document(getPathForAccountInfo());
+            DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
             userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {

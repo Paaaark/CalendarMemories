@@ -1,4 +1,4 @@
-package com.example.calendarmemories;
+package com.example.calendarmemories.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +16,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.calendarmemories.MainActivity;
+import com.example.calendarmemories.R;
+import com.example.calendarmemories.ViewHelper;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -70,9 +73,15 @@ public class SettingsFragment extends Fragment {
 
         user = mAuth.getCurrentUser();
 
+        defaultViewSettingText = v.findViewById(R.id.defaultViewSettingText);
+        userEditBtn = v.findViewById(R.id.userEditBtn);
+        applyBtn = v.findViewById(R.id.applyBtn);
+        helloUserTxt = v.findViewById(R.id.helloUserTxt);
+        loginBtn = v.findViewById(R.id.loginBtn);
+        logoutBtn = v.findViewById(R.id.logoutBtn);
+
         viewOptions = getResources().getStringArray(R.array.dailyFragmentViewOptions);
         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), R.layout.dropdown_items, viewOptions);
-        defaultViewSettingText = v.findViewById(R.id.defaultViewSettingText);
         defaultViewSettingText.setAdapter(arrayAdapter);
 
         context = getActivity();
@@ -82,7 +91,6 @@ public class SettingsFragment extends Fragment {
 
         defaultViewSettingText.setText(viewSettingVal, false);
 
-        applyBtn = v.findViewById(R.id.applyBtn);
         applyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,8 +110,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        helloUserTxt = v.findViewById(R.id.helloUserTxt);
-        loginBtn = v.findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,7 +119,6 @@ public class SettingsFragment extends Fragment {
                 );
             }
         });
-        logoutBtn = v.findViewById(R.id.logoutBtn);
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +143,15 @@ public class SettingsFragment extends Fragment {
                         .show();
             }
         });
-        userEditBtn = v.findViewById(R.id.userEditBtn);
+        userEditBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditUserFragment fragment = new EditUserFragment(sharedPref, mAuth);
+                fragment.show(
+                        getChildFragmentManager(), EditUserFragment.TAG
+                );
+            }
+        });
         updateUI(user);
 
         return v;

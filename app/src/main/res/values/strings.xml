@@ -60,7 +60,6 @@
     <string name="login_failed_title">Login failed</string>
     <string name="login_failed_msg">Either your email is not registered or your password does not match
     the given email. Please try again. </string>
-    <!-- #TODO: Change the food_delete_msg -->
     <string name="food_deleted_msg">Food entry deleted.</string>
 
     <string name="no_account">You are either not logged in or logged in as an Anonymous account. Please log in to an account to start using this feature.</string>
@@ -69,4 +68,6 @@
 
     <!-- Keys used to save user settings via SharedPreferences -->
     <string name="saved_daily_view_setting_key">daily_view_setting_key</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

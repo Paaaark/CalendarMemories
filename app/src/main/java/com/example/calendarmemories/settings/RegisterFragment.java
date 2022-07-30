@@ -1,4 +1,4 @@
-package com.example.calendarmemories;
+package com.example.calendarmemories.settings;
 
 import android.os.Bundle;
 
@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.calendarmemories.MainActivity;
+import com.example.calendarmemories.R;
+import com.example.calendarmemories.ViewHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;

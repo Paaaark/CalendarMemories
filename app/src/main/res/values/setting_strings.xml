@@ -2,6 +2,7 @@
 <resources>
 
     <!-- Basic strings -->
+    <string name="username">Username</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -9,6 +10,13 @@
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="learn_more"><u>Learn more</u></string>
+
+    <!-- invalid fields -->
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="invalid_name">Name cannot be empty</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="invalid_confirm_password">Passwords do not match.</string>
 
     <!-- SettingsFragment Strings -->
     <string name="logged_in_as_anonymous">You are logged-in as an Anonymous user.</string>
@@ -24,5 +32,8 @@
 
     <!-- LoginPageFragment Strings -->
     <string name="login_page_greeting">Good to see you back!</string>
+
+    <!-- EditUserFragment Strings -->
+    <string name="username_helper_text">Your friends will use your username to find you online.</string>
 
 </resources>
