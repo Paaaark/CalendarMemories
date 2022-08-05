@@ -56,89 +56,84 @@
             android:paddingEnd="5dp"/>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         android:background="@color/minimal_pink_transparent"
         android:gravity="center_vertical">
 
         <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/userProfileImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_person"
             android:layout_marginStart="20dp"
+            android:src="@drawable/ic_person"
             app:tint="@color/minimal_pink" />
 
         <LinearLayout
+            android:layout_toRightOf="@id/userProfileImg"
+            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginStart="15dp">
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
             <TextView
                 android:id="@+id/helloUserTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/default_hello_user"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:letterSpacing="0.1"
                 android:textColor="@color/black"/>
             <TextView
                 android:id="@+id/helloUserSubTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/name"
+                android:text="@string/username"
                 android:letterSpacing="0.1"
                 android:visibility="gone"/>
         </LinearLayout>
 
-
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"/>
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/userEditBtn"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_toStartOf="@id/logoutBtn"
+            android:visibility="gone"
             app:icon="@drawable/ic_edit_icon"
-            app:iconPadding="0dp"
             app:iconGravity="textStart"
-            app:strokeWidth="0dp"
-            android:layout_gravity="end"
-            android:visibility="gone"/>
+            app:iconPadding="0dp"
+            app:strokeWidth="0dp" />
 
         <com.google.android.material.button.MaterialButton
+            android:layout_alignParentEnd="true"
             android:id="@+id/loginBtn"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             app:icon="@drawable/ic_login"
             app:iconPadding="0dp"
             app:iconGravity="textStart"
             app:strokeWidth="0dp"
-            android:layout_gravity="end"
             android:visibility="visible"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/logoutBtn"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"
             app:icon="@drawable/ic_logout"
-            app:iconPadding="0dp"
             app:iconGravity="textStart"
-            app:strokeWidth="0dp"
-            android:layout_gravity="end"
-            android:visibility="gone"/>
+            app:iconPadding="0dp"
+            app:strokeWidth="0dp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

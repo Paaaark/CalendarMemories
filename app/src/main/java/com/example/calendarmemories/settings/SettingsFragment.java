@@ -201,8 +201,7 @@ public class SettingsFragment extends Fragment {
                     String completed = data.get(COMPLETE_FIELD).toString();
                     if (completed == null || !completed.equals(COMPLETED)) { showIncompleteAlert(); return; }
                     hideIncompleteAlert();
-                    helloUserTxt.setText(helloName(data.get("username").toString()));
-                    helloUserSubTxt.setText(user.getDisplayName());
+                    helloUserSubTxt.setText(data.get("username").toString());
                     helloUserSubTxt.setVisibility(View.VISIBLE);
                 } else {
                     // #TODO: task not successful response

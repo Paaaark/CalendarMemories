@@ -132,7 +132,7 @@ public class EditUserFragment extends DialogFragment {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String username = usernameFieldTxt.getText().toString();
                                 if (username != null && username.length() > 0) applyUsername();
-                                dismiss();
+                                else dismiss();
                             }
                         })
                         .show();
