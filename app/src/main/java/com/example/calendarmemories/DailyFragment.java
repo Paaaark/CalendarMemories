@@ -512,8 +512,6 @@ public class DailyFragment extends DialogFragment {
                     updatePanel();
                 } else {
                     // #TODO: Failed task response
-                    System.out.println("Task not successful");
-                    System.out.println(task.getException());
                 }
             }
         });

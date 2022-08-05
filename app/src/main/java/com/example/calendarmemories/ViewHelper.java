@@ -21,6 +21,10 @@ public class ViewHelper {
         return joinPath(USERS_DIR, uid);
     }
 
+    public static String getPathForUsernames() {
+        return joinPath(USERS_DIR, "usernames");
+    }
+
     public static String joinPath(String ... dirs) {
         String path = "";
         for (int i = 0; i < dirs.length; i++) {

@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CoupleFragment extends Fragment {
@@ -40,6 +41,8 @@ public class CoupleFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private String coupleUID;
+    private HashMap<String, String> usernameToUID;
+    private ArrayList<String> usernames;
 
     public CoupleFragment() {
         // Required empty public constructor
@@ -66,6 +69,8 @@ public class CoupleFragment extends Fragment {
         mainFragmentContainer = v.findViewById(R.id.mainFragmentContainer);
         noCoupleAlert = v.findViewById(R.id.noCoupleAlert);
         noAccountAlert = v.findViewById(R.id.noAccountAlert);
+        usernames = new ArrayList<String>();
+        usernameToUID = new HashMap<String, String>();
 
         isCoupleUpdatePanel();
 
@@ -116,6 +121,7 @@ public class CoupleFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, TEST_ARRAY);
         ((MaterialAutoCompleteTextView) v.findViewById(R.id.couplePageUserSearch)).setAdapter(adapter);
+        loadUsernames();
         coupleUID = null;
     }
 
@@ -124,5 +130,27 @@ public class CoupleFragment extends Fragment {
         noCoupleAlert.setVisibility(View.GONE);
         mainFragmentContainer.setVisibility(View.GONE);
         coupleUID = null;
+    }
+
+    public void loadUsernames() {
+        DocumentReference userDB = db.document(ViewHelper.getPathForUsernames());
+        userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (!documentSnapshot.exists()) return;
+                    Map<String, Object> data = documentSnapshot.getData();
+                    for (Map.Entry<String, Object> entry: data.entrySet()) {
+                        Map<String, Object> entryData = (Map<String, Object>) entry.getValue();
+                        usernames.add(entryData.get("username").toString());
+                    }
+                    ((MaterialAutoCompleteTextView) v.findViewById(R.id.couplePageUserSearch))
+                            .setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, usernames));
+                } else {
+                    // #TODO: Failed task response
+                }
+            }
+        });
     }
 }
