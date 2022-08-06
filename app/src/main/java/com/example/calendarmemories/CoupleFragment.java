@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
@@ -25,9 +26,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CoupleFragment extends Fragment {
@@ -175,23 +179,36 @@ public class CoupleFragment extends Fragment {
                 updateCoupleCode(coupleCode);
             }
         });
-        DocumentReference publicUsersDB = db.document(DBHelper.getPathForUsernames());
-        Map<String, Object> newInfo = new HashMap<String, Object>();
-        newInfo.put(user.getUid(), newCode);
-        publicUsersDB.set(newInfo);
     }
 
     public void validateCoupleCode() {
         TextInputEditText coupleSearchText = v.findViewById(R.id.coupleSearchText);
         String inputCode = coupleSearchText.getText().toString();
+        System.out.println("Received inputCode is: " + inputCode);
         if (inputCode.length() != DBHelper.COUPLE_CODE_LEN) {
             ViewHelper.getSnackbar(v, R.string.invalid_couple_code, Snackbar.LENGTH_SHORT, null);
             return;
         }
-
+        queryCoupleCode(inputCode);
     }
 
-    public void getUsersDatabase() {
-
+    public void queryCoupleCode(String code) {
+        Query query = db.collection(DBHelper.USERS_DIR).whereEqualTo("coupleCode", code);
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.isEmpty() || queryDocumentSnapshots.size() == 0) {
+                    ViewHelper.getSnackbar(v, R.string.invalid_couple_code, Snackbar.LENGTH_SHORT,
+                            null).show();
+                    return;
+                }
+                DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                String username = (String) documentSnapshot.get("username");
+                String name = (String) documentSnapshot.get("name");
+                searchedPartner.setVisibility(View.VISIBLE);
+                ((TextView) v.findViewById(R.id.searchedPartnerName)).setText(name);
+                ((TextView) v.findViewById(R.id.searchedPartnerUsername)).setText(username);
+            }
+        });
     }
 }
