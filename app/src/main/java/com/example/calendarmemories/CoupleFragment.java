@@ -16,7 +16,10 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -30,17 +33,19 @@ import java.util.Map;
 public class CoupleFragment extends Fragment {
 
     private static final String COUPLE_KEY = "coupleUID";
+    private static final String COUPLE_CODE_KEY = "coupleCode";
     private static final String[] TEST_ARRAY = { "hello", "hell", "heaven", "holy", "molly" };
 
     private View v;
     private FragmentContainerView mainFragmentContainer;
-    private LinearLayout noCoupleAlert;
+    private LinearLayout noCoupleAlert, searchedPartner;
     private TextView noAccountAlert;
+    private TextInputLayout coupleSearchLayout;
     private SharedPreferences sharedPref;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String coupleUID;
+    private String coupleCode;
     private HashMap<String, String> usernameToUID;
     private ArrayList<String> usernames;
 
@@ -69,10 +74,19 @@ public class CoupleFragment extends Fragment {
         mainFragmentContainer = v.findViewById(R.id.mainFragmentContainer);
         noCoupleAlert = v.findViewById(R.id.noCoupleAlert);
         noAccountAlert = v.findViewById(R.id.noAccountAlert);
+        coupleSearchLayout = v.findViewById(R.id.coupleSearchLayout);
+        searchedPartner = v.findViewById(R.id.searchedPartner);
         usernames = new ArrayList<String>();
         usernameToUID = new HashMap<String, String>();
 
         isCoupleUpdatePanel();
+
+        coupleSearchLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                validateCoupleCode();
+            }
+        });
 
         return v;
     }
@@ -81,7 +95,7 @@ public class CoupleFragment extends Fragment {
             anonymousUpdatePanel();
         } else {
             System.out.println("Logged in");
-            DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
+            DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
             userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -111,46 +125,73 @@ public class CoupleFragment extends Fragment {
         noCoupleAlert.setVisibility(View.GONE);
         noAccountAlert.setVisibility(View.GONE);
         mainFragmentContainer.setVisibility(View.VISIBLE);
-        coupleUID = couple;
     }
 
     public void noCoupleUpdatePanel() {
         noCoupleAlert.setVisibility(View.VISIBLE);
         noAccountAlert.setVisibility(View.GONE);
         mainFragmentContainer.setVisibility(View.GONE);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, TEST_ARRAY);
-        ((MaterialAutoCompleteTextView) v.findViewById(R.id.couplePageUserSearch)).setAdapter(adapter);
-        loadUsernames();
-        coupleUID = null;
+        getCoupleCode();
     }
 
     public void anonymousUpdatePanel() {
         noAccountAlert.setVisibility(View.VISIBLE);
         noCoupleAlert.setVisibility(View.GONE);
         mainFragmentContainer.setVisibility(View.GONE);
-        coupleUID = null;
     }
 
-    public void loadUsernames() {
-        DocumentReference userDB = db.document(ViewHelper.getPathForUsernames());
+    public void updateCoupleCode(String code) {
+        coupleCode = code;
+        ((TextView) v.findViewById(R.id.coupleCode)).setText("Your couple code: " + coupleCode);
+    }
+
+    public void getCoupleCode() {
+        DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
         userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
-                    if (!documentSnapshot.exists()) return;
+                    if (!documentSnapshot.exists()) return; // #TODO: Response to no document
                     Map<String, Object> data = documentSnapshot.getData();
-                    for (Map.Entry<String, Object> entry: data.entrySet()) {
-                        Map<String, Object> entryData = (Map<String, Object>) entry.getValue();
-                        usernames.add(entryData.get("username").toString());
+                    String code = (String) data.get(COUPLE_CODE_KEY);
+                    if (code == null) generateCoupleCode();
+                    else {
+                        updateCoupleCode(code);
                     }
-                    ((MaterialAutoCompleteTextView) v.findViewById(R.id.couplePageUserSearch))
-                            .setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, usernames));
-                } else {
-                    // #TODO: Failed task response
                 }
             }
         });
+    }
+
+    public void generateCoupleCode() {
+        DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
+        Map<String, Object> newCode = new HashMap<String, Object>();
+        coupleCode = DBHelper.generateCoupleCode();
+        newCode.put(COUPLE_CODE_KEY, coupleCode);
+        userDB.update(newCode).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                updateCoupleCode(coupleCode);
+            }
+        });
+        DocumentReference publicUsersDB = db.document(DBHelper.getPathForUsernames());
+        Map<String, Object> newInfo = new HashMap<String, Object>();
+        newInfo.put(user.getUid(), newCode);
+        publicUsersDB.set(newInfo);
+    }
+
+    public void validateCoupleCode() {
+        TextInputEditText coupleSearchText = v.findViewById(R.id.coupleSearchText);
+        String inputCode = coupleSearchText.getText().toString();
+        if (inputCode.length() != DBHelper.COUPLE_CODE_LEN) {
+            ViewHelper.getSnackbar(v, R.string.invalid_couple_code, Snackbar.LENGTH_SHORT, null);
+            return;
+        }
+
+    }
+
+    public void getUsersDatabase() {
+
     }
 }

@@ -63,7 +63,7 @@
     <string name="food_deleted_msg">Food entry deleted.</string>
 
     <string name="no_account">You are either not logged in or logged in as an Anonymous account. Please log in to an account to start using this feature.</string>
-    <string name="no_couple">You do not have a partner set up yet! Send a partner request or accept requests sent to you to start using this feature!</string>
+    <string name="no_couple">You do not have a partner set up yet! Share your couple code with your partner or input your partner\'s couple code to start!</string>
     <string name="user_info_incomplete"></string>
 
     <!-- Keys used to save user settings via SharedPreferences -->

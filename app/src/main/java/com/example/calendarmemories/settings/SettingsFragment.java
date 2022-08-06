@@ -16,6 +16,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.calendarmemories.DBHelper;
 import com.example.calendarmemories.MainActivity;
 import com.example.calendarmemories.R;
 import com.example.calendarmemories.ViewHelper;
@@ -190,7 +191,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void didCompleteProfile() {
-        DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
+        DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
         userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -250,7 +251,7 @@ public class SettingsFragment extends Fragment {
     }
 
     public String getPathForAccountInfo() {
-        return ViewHelper.joinPath(USERS_DIR, user.getUid());
+        return DBHelper.joinPath(USERS_DIR, user.getUid());
     }
 
     public String itosViewSetting(int val) {

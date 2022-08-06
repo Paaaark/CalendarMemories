@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.calendarmemories.DBHelper;
 import com.example.calendarmemories.R;
 import com.example.calendarmemories.ViewHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -143,7 +144,7 @@ public class EditUserFragment extends DialogFragment {
     }
 
     public void applyUsername() {
-        DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
+        DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
         Map<String, Object> dataToModify = new HashMap<String, Object>();
         dataToModify.put(USERNAME_KEY, usernameFieldTxt.getText().toString());
         dataToModify.put(COMPLETE_FIELD, COMPLETED);
@@ -165,7 +166,7 @@ public class EditUserFragment extends DialogFragment {
     }
 
     public void setUsername() {
-        DocumentReference userDB = db.document(ViewHelper.getPathForAccountInfo(user.getUid()));
+        DocumentReference userDB = db.document(DBHelper.getPathForAccountInfo(user.getUid()));
         userDB.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

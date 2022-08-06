@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Basic Strings -->
+
+    <!-- Couple Fragment -->
+    <string name="input_couple_code">Your partner\'s couple code</string>
+    <string name="your_couple_code">Your couple code:</string>
+    <string name="invalid_couple_code">Invalid couple code!</string>
+</resources>
